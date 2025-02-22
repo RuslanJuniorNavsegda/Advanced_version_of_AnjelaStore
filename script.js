@@ -17,12 +17,15 @@ const products = [
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+// Инициализация при загрузке
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   updateCartCount();
   initScrollAnimations();
+  initCart();
 });
 
+// Анимации при скролле
 function initScrollAnimations() {
   const observer = new IntersectionObserver(
     (entries) => {
@@ -40,12 +43,15 @@ function initScrollAnimations() {
     .querySelectorAll("[data-scroll]")
     .forEach((el) => observer.observe(el));
 
+  // Анимация хедера при скролле
   window.addEventListener("scroll", () => {
-    const header = document.querySelector(".header");
-    header.classList.toggle("scrolled", window.scrollY > 50);
+    document
+      .querySelector(".header")
+      .classList.toggle("scrolled", window.scrollY > 50);
   });
 }
 
+// Рендер товаров
 function renderProducts() {
   const container = document.getElementById("products-container");
   container.innerHTML = products
@@ -70,12 +76,56 @@ function renderProducts() {
     .join("");
 }
 
+// Работа с корзиной
+function initCart() {
+  document.querySelector(".cart-link").addEventListener("click", toggleCart);
+  document.querySelector(".close-cart").addEventListener("click", toggleCart);
+  document.getElementById("cartModal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("cartModal")) toggleCart();
+  });
+  renderCart();
+}
+
+function toggleCart() {
+  document.getElementById("cartModal").classList.toggle("active");
+}
+
 function addToCart(productId) {
   const product = products.find((p) => p.id === productId);
   cart.push(product);
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
   animateCart();
+  renderCart();
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter((item) => item.id !== productId);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  container.innerHTML = cart
+    .map(
+      (item) => `
+        <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+                <div class="cart-item-title">${item.name}</div>
+                <div class="cart-item-price">${item.price} ₽</div>
+            </div>
+            <button class="remove-item" onclick="removeFromCart(${item.id})">✕</button>
+        </div>
+    `
+    )
+    .join("");
+
+  document.getElementById("cartTotal").textContent = `${total} ₽`;
 }
 
 function updateCartCount() {

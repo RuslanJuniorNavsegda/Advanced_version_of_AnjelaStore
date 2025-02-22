@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AnjelaStore | Детская одежда</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600&family=Nunito:wght@300;400;600;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -37,7 +37,7 @@
             >Новинки</a
           >
           <a
-            href="#cart"
+            href="#"
             class="nav-link cart-link"
             data-scroll="slide-left"
             data-scroll-delay="300"
@@ -131,6 +131,22 @@
         </div>
       </div>
     </footer>
+
+    <!-- Модальное окно корзины -->
+    <div class="cart-modal" id="cartModal">
+      <div class="cart-modal-content">
+        <div class="cart-header">
+          <h3>Ваша корзина</h3>
+          <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-total">
+          <span>Итого:</span>
+          <span id="cartTotal">0 ₽</span>
+        </div>
+        <button class="checkout-btn">Оформить заказ</button>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>
