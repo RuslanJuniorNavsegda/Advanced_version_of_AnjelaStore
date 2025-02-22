@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AnjelaStore | Детская одежда</title>
+    <meta
+      name="description"
+      content="Магазин детской одежды AnjelaKids: экологичные материалы, стильные коллекции для детей 0-12 лет"
+    />
+    <title>AnjelaKids | Детская одежда</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600&family=Nunito:wght@300;400;600;700&display=swap"
       rel="stylesheet"
@@ -15,33 +20,18 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- Шапка -->
     <header class="header">
       <div class="container">
-        <a href="#" class="logo" data-scroll="slide-right">
-          <i class="fas fa-star"></i>
-          AnjelaStore
+        <a href="#" class="logo" data-scroll="fade">
+          <i class="fas fa-baby"></i>
+          <span>AnjelaKids</span>
         </a>
         <nav class="nav">
-          <a
-            href="#catalog"
-            class="nav-link"
-            data-scroll="slide-left"
-            data-scroll-delay="100"
-            >Каталог</a
-          >
-          <a
-            href="#new"
-            class="nav-link"
-            data-scroll="slide-left"
-            data-scroll-delay="200"
-            >Новинки</a
-          >
-          <a
-            href="#"
-            class="nav-link cart-link"
-            data-scroll="slide-left"
-            data-scroll-delay="300"
-          >
+          <a href="#age-0-4" class="nav-link" data-scroll="fade">0-4 года</a>
+          <a href="#age-4-8" class="nav-link" data-scroll="fade">4-8 лет</a>
+          <a href="#age-8-12" class="nav-link" data-scroll="fade">8-12 лет</a>
+          <a href="#" class="nav-link cart-link" data-scroll="fade">
             <i class="fas fa-shopping-cart"></i>
             <span id="cart-count">0</span>
           </a>
@@ -49,85 +39,117 @@
       </div>
     </header>
 
-    <section class="hero">
+    <!-- Герой -->
+    <section class="hero" id="hero">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title" data-scroll="fade" data-scroll-delay="100">
-            Детская мода нового поколения
+          <h1 class="hero-title" data-scroll="fade">
+            Одежда для счастливого детства
           </h1>
-          <p class="hero-subtitle" data-scroll="fade" data-scroll-delay="300">
-            Экологично · Удобно · Стильно
+          <p class="hero-subtitle" data-scroll="fade">
+            Натуральные ткани · Удобный крой · Безопасные красители
           </p>
-          <button
-            class="cta-button"
-            data-scroll="scale"
-            data-scroll-delay="500"
-          >
-            Смотреть коллекцию
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section class="categories" id="catalog">
-      <div class="container">
-        <h2 class="section-title" data-scroll="slide-up">Наши категории</h2>
-        <div class="categories-grid">
-          <div
-            class="category-card"
-            data-scroll="slide-up"
-            data-scroll-delay="200"
-          >
-            <div
-              class="category-image"
-              style="background-image: url('images/girls.jpg')"
-            ></div>
-            <h3 class="category-title">Для девочек</h3>
-          </div>
-          <div
-            class="category-card"
-            data-scroll="slide-up"
-            data-scroll-delay="400"
-          >
-            <div
-              class="category-image"
-              style="background-image: url('images/boys.jpg')"
-            ></div>
-            <h3 class="category-title">Для мальчиков</h3>
+          <div class="hero-cta" data-scroll="fade">
+            <button class="cta-button">Смотреть новинки</button>
+            <button class="cta-button secondary">Выбрать размер</button>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="products">
+    <!-- Возрастные категории -->
+    <section class="age-section" id="age-0-4">
       <div class="container">
-        <h2 class="section-title" data-scroll="slide-up">Хиты продаж</h2>
-        <div class="products-grid" id="products-container"></div>
+        <div class="section-header">
+          <h2 class="section-title" data-scroll="fade">Для малышей 0-4 года</h2>
+          <div class="decorative-line"></div>
+        </div>
+        <div class="products-grid" data-age="0-4"></div>
       </div>
     </section>
 
-    <footer class="footer" data-scroll="fade">
+    <section class="age-section" id="age-4-8">
       <div class="container">
-        <div class="footer-content">
-          <div
-            class="footer-section"
-            data-scroll="slide-right"
-            data-scroll-delay="200"
-          >
-            <h4>AnjelaStore</h4>
-            <p>Ваш надежный партнер в мире детской моды</p>
+        <div class="section-header">
+          <h2 class="section-title" data-scroll="fade">Для детей 4-8 лет</h2>
+          <div class="decorative-line"></div>
+        </div>
+        <div class="products-grid" data-age="4-8"></div>
+      </div>
+    </section>
+
+    <section class="age-section" id="age-8-12">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title" data-scroll="fade">Для ребят 8-12 лет</h2>
+          <div class="decorative-line"></div>
+        </div>
+        <div class="products-grid" data-age="8-12"></div>
+      </div>
+    </section>
+
+    <!-- Преимущества -->
+    <section class="benefits">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title" data-scroll="fade">Наши преимущества</h2>
+          <div class="decorative-line accent"></div>
+        </div>
+        <div class="benefits-grid">
+          <div class="benefit-card" data-scroll="fade">
+            <div class="benefit-icon"><i class="fas fa-leaf"></i></div>
+            <h3>Экологичность</h3>
+            <p>Oeko-Tex сертифицированные материалы</p>
           </div>
-          <div
-            class="footer-section"
-            data-scroll="slide-left"
-            data-scroll-delay="200"
-          >
-            <h4>Контакты</h4>
-            <p>+7 (999) 123-45-67<br />support@angelastore.ru</p>
+          <div class="benefit-card" data-scroll="fade">
+            <div class="benefit-icon"><i class="fas fa-truck"></i></div>
+            <h3>Быстрая доставка</h3>
+            <p>Курьером за 1-3 дня по всей России</p>
+          </div>
+          <div class="benefit-card" data-scroll="fade">
+            <div class="benefit-icon"><i class="fas fa-undo"></i></div>
+            <h3>Легкий возврат</h3>
+            <p>Возврат в течение 14 дней без вопросов</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h4 class="footer-title">О компании</h4>
+            <ul class="footer-links">
+              <li><a href="#">О нас</a></li>
+              <li><a href="#">Отзывы</a></li>
+              <li><a href="#">Вакансии</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4 class="footer-title">Помощь</h4>
+            <ul class="footer-links">
+              <li><a href="#">Доставка</a></li>
+              <li><a href="#">Оплата</a></li>
+              <li><a href="#">Гарантии</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4 class="footer-title">Контакты</h4>
+            <p>
+              +7 (999) 123-45-67<br />support@angelakids.ru<br />Москва, ул.
+              Детская, 15
+            </p>
           </div>
         </div>
         <div class="footer-bottom">
-          <p>© 2024 AnjelaStore. Все права защищены</p>
+          <p>© 2024 AnjelaKids. Все права защищены</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-vk"></i></a>
+            <a href="#"><i class="fab fa-telegram"></i></a>
+          </div>
         </div>
       </div>
     </footer>
@@ -136,15 +158,17 @@
     <div class="cart-modal" id="cartModal">
       <div class="cart-modal-content">
         <div class="cart-header">
-          <h3>Ваша корзина</h3>
+          <h3 class="cart-title">Ваша корзина</h3>
           <button class="close-cart">&times;</button>
         </div>
         <div class="cart-items" id="cartItems"></div>
-        <div class="cart-total">
-          <span>Итого:</span>
-          <span id="cartTotal">0 ₽</span>
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Итого:</span>
+            <span id="cartTotal">0 ₽</span>
+          </div>
+          <button class="checkout-btn">Перейти к оплате</button>
         </div>
-        <button class="checkout-btn">Оформить заказ</button>
       </div>
     </div>
 
