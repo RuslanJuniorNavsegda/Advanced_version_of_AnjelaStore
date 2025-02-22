@@ -23,13 +23,30 @@ const products = [
 ];
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let lastScroll = 0;
+const header = document.querySelector(".header");
 
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   updateCartCount();
   initCart();
   initScrollAnimations();
+  initHeaderBehavior();
 });
+
+function initHeaderBehavior() {
+  window.addEventListener("scroll", () => {
+    const currentScroll = window.pageYOffset;
+
+    if (currentScroll > lastScroll && currentScroll > 100) {
+      header.style.transform = "translateY(-100%)";
+    } else {
+      header.style.transform = "translateY(0)";
+    }
+
+    lastScroll = currentScroll;
+  });
+}
 
 function renderProducts() {
   const ageGroups = ["0-4", "4-8", "8-12"];
@@ -44,7 +61,6 @@ function renderProducts() {
             <div class="product-card" data-scroll="slide-up">
                 <img class="product-image" src="${product.image}" alt="${product.name}">
                 <div class="product-content">
-                    <span class="age-badge">${product.age} года</span>
                     <h3 class="product-title">${product.name}</h3>
                     <p class="product-price">${product.price} ₽</p>
                     <button class="add-to-cart" onclick="addToCart(${product.id})">В корзину</button>
@@ -130,7 +146,6 @@ function initScrollAnimations() {
   });
 
   window.addEventListener("scroll", () => {
-    const header = document.querySelector(".header");
     header.classList.toggle("scrolled", window.scrollY > 50);
   });
 }
