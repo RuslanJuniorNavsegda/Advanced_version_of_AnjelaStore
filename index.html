@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KidsFashion | Детская одежда</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Шапка -->
+    <header class="header">
+      <div class="container">
+        <a href="#" class="logo">👕 KidsFashion</a>
+        <nav class="nav">
+          <a href="#catalog" data-scroll data-scroll-delay="100">Каталог</a>
+          <a href="#new" data-scroll data-scroll-delay="200">Новинки</a>
+          <a href="#cart" data-scroll data-scroll-delay="300" class="cart-link">
+            Корзина (<span id="cart-count">0</span>)
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Герой -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero-title" data-scroll="scale" data-scroll-delay="100">
+          Детская мода 2024
+        </h1>
+        <p class="hero-subtitle" data-scroll="left" data-scroll-delay="300">
+          Экологичные материалы и безопасный дизайн
+        </p>
+        <button class="cta-button" data-scroll="right" data-scroll-delay="500">
+          Смотреть новинки
+        </button>
+      </div>
+    </section>
+
+    <!-- Категории -->
+    <section class="categories" id="catalog">
+      <div class="container">
+        <h2 class="section-title" data-scroll="left">Категории</h2>
+        <div class="categories-grid">
+          <div class="category-card" data-scroll data-scroll-delay="200">
+            <img src="images/girls.jpg" alt="Для девочек" />
+            <h3>Для девочек</h3>
+          </div>
+          <div class="category-card" data-scroll data-scroll-delay="300">
+            <img src="images/boys.jpg" alt="Для мальчиков" />
+            <h3>Для мальчиков</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Товары -->
+    <section class="products">
+      <div class="container">
+        <h2 class="section-title" data-scroll="right">Популярные товары</h2>
+        <div class="products-grid" id="products-container"></div>
+      </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer class="footer" data-scroll>
+      <div class="container">
+        <p>© 2024 KidsFashion. Все права защищены</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
