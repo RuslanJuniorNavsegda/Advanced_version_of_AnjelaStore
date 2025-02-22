@@ -28,16 +28,16 @@ function initScrollAnimations() {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
+          entry.target.classList.add("animated");
+          observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.1 }
+    { threshold: 0.2 }
   );
 
   document
-    .querySelectorAll(".category-card, .product-card")
+    .querySelectorAll("[data-scroll]")
     .forEach((el) => observer.observe(el));
 
   window.addEventListener("scroll", () => {
@@ -50,13 +50,19 @@ function renderProducts() {
   const container = document.getElementById("products-container");
   container.innerHTML = products
     .map(
-      (product) => `
-        <div class="product-card">
-            <img class="product-image" src="${product.image}" alt="${product.name}">
+      (product, index) => `
+        <div class="product-card" data-scroll="slide-up" data-scroll-delay="${
+          index * 150
+        }">
+            <img class="product-image" src="${product.image}" alt="${
+        product.name
+      }">
             <div class="product-content">
                 <h3 class="product-title">${product.name}</h3>
                 <p class="product-price">${product.price} ₽</p>
-                <button class="add-to-cart" onclick="addToCart(${product.id})">В корзину</button>
+                <button class="add-to-cart" onclick="addToCart(${
+                  product.id
+                })">В корзину</button>
             </div>
         </div>
     `

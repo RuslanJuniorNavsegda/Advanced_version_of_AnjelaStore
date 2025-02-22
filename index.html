@@ -15,17 +15,33 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Шапка -->
     <header class="header">
       <div class="container">
-        <a href="#" class="logo">
+        <a href="#" class="logo" data-scroll="slide-right">
           <i class="fas fa-star"></i>
           AnjelaStore
         </a>
         <nav class="nav">
-          <a href="#catalog" class="nav-link">Каталог</a>
-          <a href="#new" class="nav-link">Новинки</a>
-          <a href="#cart" class="nav-link cart-link">
+          <a
+            href="#catalog"
+            class="nav-link"
+            data-scroll="slide-left"
+            data-scroll-delay="100"
+            >Каталог</a
+          >
+          <a
+            href="#new"
+            class="nav-link"
+            data-scroll="slide-left"
+            data-scroll-delay="200"
+            >Новинки</a
+          >
+          <a
+            href="#cart"
+            class="nav-link cart-link"
+            data-scroll="slide-left"
+            data-scroll-delay="300"
+          >
             <i class="fas fa-shopping-cart"></i>
             <span id="cart-count">0</span>
           </a>
@@ -33,32 +49,46 @@
       </div>
     </header>
 
-    <!-- Герой -->
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">Модная детская одежда</h1>
-          <p class="hero-subtitle">
-            Экологичные материалы · Бесплатная доставка · Гарантия качества
+          <h1 class="hero-title" data-scroll="fade" data-scroll-delay="100">
+            Детская мода нового поколения
+          </h1>
+          <p class="hero-subtitle" data-scroll="fade" data-scroll-delay="300">
+            Экологично · Удобно · Стильно
           </p>
-          <button class="cta-button">Смотреть коллекцию</button>
+          <button
+            class="cta-button"
+            data-scroll="scale"
+            data-scroll-delay="500"
+          >
+            Смотреть коллекцию
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- Категории -->
     <section class="categories" id="catalog">
       <div class="container">
-        <h2 class="section-title">Категории</h2>
+        <h2 class="section-title" data-scroll="slide-up">Наши категории</h2>
         <div class="categories-grid">
-          <div class="category-card">
+          <div
+            class="category-card"
+            data-scroll="slide-up"
+            data-scroll-delay="200"
+          >
             <div
               class="category-image"
               style="background-image: url('images/girls.jpg')"
             ></div>
             <h3 class="category-title">Для девочек</h3>
           </div>
-          <div class="category-card">
+          <div
+            class="category-card"
+            data-scroll="slide-up"
+            data-scroll-delay="400"
+          >
             <div
               class="category-image"
               style="background-image: url('images/boys.jpg')"
@@ -69,23 +99,29 @@
       </div>
     </section>
 
-    <!-- Товары -->
     <section class="products">
       <div class="container">
-        <h2 class="section-title">Популярные товары</h2>
+        <h2 class="section-title" data-scroll="slide-up">Хиты продаж</h2>
         <div class="products-grid" id="products-container"></div>
       </div>
     </section>
 
-    <!-- Подвал -->
-    <footer class="footer">
+    <footer class="footer" data-scroll="fade">
       <div class="container">
         <div class="footer-content">
-          <div class="footer-section">
+          <div
+            class="footer-section"
+            data-scroll="slide-right"
+            data-scroll-delay="200"
+          >
             <h4>AnjelaStore</h4>
-            <p>Детская одежда премиум-класса</p>
+            <p>Ваш надежный партнер в мире детской моды</p>
           </div>
-          <div class="footer-section">
+          <div
+            class="footer-section"
+            data-scroll="slide-left"
+            data-scroll-delay="200"
+          >
             <h4>Контакты</h4>
             <p>+7 (999) 123-45-67<br />support@angelastore.ru</p>
           </div>
