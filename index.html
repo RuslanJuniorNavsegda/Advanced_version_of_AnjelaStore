@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KidsFashion | Детская одежда</title>
+    <title>AnjelaStore | Детская одежда</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans&display=swap"
       rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -14,12 +18,16 @@
     <!-- Шапка -->
     <header class="header">
       <div class="container">
-        <a href="#" class="logo">👕 KidsFashion</a>
+        <a href="#" class="logo">
+          <i class="fas fa-star"></i>
+          AnjelaStore
+        </a>
         <nav class="nav">
-          <a href="#catalog" data-scroll data-scroll-delay="100">Каталог</a>
-          <a href="#new" data-scroll data-scroll-delay="200">Новинки</a>
-          <a href="#cart" data-scroll data-scroll-delay="300" class="cart-link">
-            Корзина (<span id="cart-count">0</span>)
+          <a href="#catalog" class="nav-link">Каталог</a>
+          <a href="#new" class="nav-link">Новинки</a>
+          <a href="#cart" class="nav-link cart-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count">0</span>
           </a>
         </nav>
       </div>
@@ -28,30 +36,34 @@
     <!-- Герой -->
     <section class="hero">
       <div class="container">
-        <h1 class="hero-title" data-scroll="scale" data-scroll-delay="100">
-          Детская мода 2024
-        </h1>
-        <p class="hero-subtitle" data-scroll="left" data-scroll-delay="300">
-          Экологичные материалы и безопасный дизайн
-        </p>
-        <button class="cta-button" data-scroll="right" data-scroll-delay="500">
-          Смотреть новинки
-        </button>
+        <div class="hero-content">
+          <h1 class="hero-title">Модная детская одежда</h1>
+          <p class="hero-subtitle">
+            Экологичные материалы · Бесплатная доставка · Гарантия качества
+          </p>
+          <button class="cta-button">Смотреть коллекцию</button>
+        </div>
       </div>
     </section>
 
     <!-- Категории -->
     <section class="categories" id="catalog">
       <div class="container">
-        <h2 class="section-title" data-scroll="left">Категории</h2>
+        <h2 class="section-title">Категории</h2>
         <div class="categories-grid">
-          <div class="category-card" data-scroll data-scroll-delay="200">
-            <img src="images/girls.jpg" alt="Для девочек" />
-            <h3>Для девочек</h3>
+          <div class="category-card">
+            <div
+              class="category-image"
+              style="background-image: url('images/girls.jpg')"
+            ></div>
+            <h3 class="category-title">Для девочек</h3>
           </div>
-          <div class="category-card" data-scroll data-scroll-delay="300">
-            <img src="images/boys.jpg" alt="Для мальчиков" />
-            <h3>Для мальчиков</h3>
+          <div class="category-card">
+            <div
+              class="category-image"
+              style="background-image: url('images/boys.jpg')"
+            ></div>
+            <h3 class="category-title">Для мальчиков</h3>
           </div>
         </div>
       </div>
@@ -60,15 +72,27 @@
     <!-- Товары -->
     <section class="products">
       <div class="container">
-        <h2 class="section-title" data-scroll="right">Популярные товары</h2>
+        <h2 class="section-title">Популярные товары</h2>
         <div class="products-grid" id="products-container"></div>
       </div>
     </section>
 
     <!-- Подвал -->
-    <footer class="footer" data-scroll>
+    <footer class="footer">
       <div class="container">
-        <p>© 2024 KidsFashion. Все права защищены</p>
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>AnjelaStore</h4>
+            <p>Детская одежда премиум-класса</p>
+          </div>
+          <div class="footer-section">
+            <h4>Контакты</h4>
+            <p>+7 (999) 123-45-67<br />support@angelastore.ru</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2024 AnjelaStore. Все права защищены</p>
+        </div>
       </div>
     </footer>
 
