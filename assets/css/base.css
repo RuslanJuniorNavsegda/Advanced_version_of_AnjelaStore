@@ -1,0 +1,163 @@
+/* Base styles, variables, and reset */
+
+:root {
+  --primary: #81d4fa;
+  --secondary: #ffab91;
+  --accent: #c5e1a5;
+  --dark: #455a64;
+  --light: #f5f5f5;
+  --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  --heading-font: "Comfortaa", cursive;
+  --body-font: "Nunito", sans-serif;
+
+  /* Section spacing - more compact */
+  --section-padding-y: 4rem;
+  --section-padding-y-mobile: 2.5rem;
+  --section-margin-bottom: 3rem;
+  --content-spacing: 1.2rem;
+
+  /* Responsive breakpoints */
+  --breakpoint-small: 480px;
+  --breakpoint-medium: 768px;
+  --breakpoint-large: 992px;
+  --breakpoint-xlarge: 1200px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--body-font);
+  background: var(--light);
+  color: var(--dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Animation for elements with data-scroll attribute */
+[data-scroll] {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: var(--transition);
+}
+
+[data-scroll].animated {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Common container */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading-font);
+  line-height: 1.3;
+  margin-bottom: var(--content-spacing);
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  text-decoration: none;
+  color: var(--dark);
+  transition: var(--transition);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: var(--body-font);
+  transition: var(--transition);
+}
+
+/* Common section styles */
+.section-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.decorative-line {
+  width: 80px;
+  height: 4px;
+  background: var(--accent);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+.decorative-line.accent {
+  background: var(--secondary);
+}
+
+.decorative-line.primary {
+  background: var(--primary);
+}
+
+/* Responsive Typography */
+@media (max-width: 992px) {
+  html {
+    font-size: 15px;
+  }
+
+  .section-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Utility classes */
+.no-scroll {
+  overflow: hidden;
+}

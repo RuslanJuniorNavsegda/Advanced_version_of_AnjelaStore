@@ -1,0 +1,10 @@
+/* AnjelaKids - Main CSS File */
+
+/* Import base styles */
+@import "base.css";
+
+/* Import component styles */
+@import "header.css";
+@import "products.css";
+@import "sections.css";
+@import "cart.css";
