@@ -83,6 +83,9 @@
               <button class="filter-btn" data-category="свитера">
                 Свитера
               </button>
+              <button class="add-all-btn" onclick="addAllToCart('0-4')">
+                <i class="fas fa-shopping-basket"></i> Добавить все
+              </button>
             </div>
           </div>
           <div class="products-grid" data-age="0-4"></div>
@@ -102,6 +105,9 @@
               <button class="filter-btn" data-category="свитера">
                 Свитера
               </button>
+              <button class="add-all-btn" onclick="addAllToCart('4-8')">
+                <i class="fas fa-shopping-basket"></i> Добавить все
+              </button>
             </div>
           </div>
           <div class="products-grid" data-age="4-8"></div>
@@ -120,6 +126,9 @@
               <button class="filter-btn" data-category="брюки">Брюки</button>
               <button class="filter-btn" data-category="свитера">
                 Свитера
+              </button>
+              <button class="add-all-btn" onclick="addAllToCart('8-12')">
+                <i class="fas fa-shopping-basket"></i> Добавить все
               </button>
             </div>
           </div>
@@ -235,23 +244,102 @@
       </div>
     </footer>
 
-    <!-- Модальное окно корзины -->
-    <div class="cart-modal" id="cartModal">
+    <!-- Cart Modal -->
+    <div id="cartModal" class="cart-modal">
       <div class="cart-modal-content">
         <div class="cart-header">
-          <h3 class="cart-title">Ваша корзина</h3>
-          <button class="close-cart">&times;</button>
+          <h3>Корзина покупок</h3>
+          <button class="close-cart"><i class="fas fa-times"></i></button>
         </div>
-        <div class="cart-items" id="cartItems"></div>
+        <div id="cartItems" class="cart-items">
+          <!-- Cart items will be rendered here by JavaScript -->
+        </div>
         <div class="cart-footer">
           <div class="cart-total">
             <span>Итого:</span>
             <span id="cartTotal">0 ₽</span>
           </div>
-          <button class="checkout-btn">Перейти к оплате</button>
+          <button
+            id="checkoutBtn"
+            class="checkout-btn"
+            onclick="initiateCheckout()"
+          >
+            <i class="fas fa-credit-card"></i> Оформить заказ
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- Notification Container -->
+    <div id="notification" class="notification">
+      <span id="notificationMessage"></span>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="admin-modal">
+      <div class="admin-modal-content">
+        <div class="admin-header">
+          <h3>Управление товарами</h3>
+          <button class="close-admin"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="admin-body">
+          <form id="addProductForm" class="add-product-form">
+            <h4>Добавить новый товар</h4>
+
+            <div class="form-group">
+              <label for="productName">Название товара</label>
+              <input type="text" id="productName" required />
+            </div>
+
+            <div class="form-group">
+              <label for="productPrice">Цена (₽)</label>
+              <input type="number" id="productPrice" min="1" required />
+            </div>
+
+            <div class="form-group">
+              <label for="productAge">Возрастная группа</label>
+              <select id="productAge" required>
+                <option value="0-4">0-4 года</option>
+                <option value="4-8">4-8 лет</option>
+                <option value="8-12">8-12 лет</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="productCategory">Категория</label>
+              <select id="productCategory" required>
+                <option value="одежда">Одежда</option>
+                <option value="обувь">Обувь</option>
+                <option value="брюки">Брюки</option>
+                <option value="свитера">Свитера</option>
+                <option value="верхняя одежда">Верхняя одежда</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="productColor">Цвет товара</label>
+              <input type="color" id="productColor" value="#81d4fa" />
+            </div>
+
+            <button type="submit" class="add-product-btn">
+              <i class="fas fa-plus"></i> Добавить товар
+            </button>
+          </form>
+
+          <div class="admin-products">
+            <h4>Управление товарами</h4>
+            <div id="adminProductsList" class="admin-products-list">
+              <!-- Products will be listed here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Button (Fixed) -->
+    <button id="adminBtn" class="admin-btn">
+      <i class="fas fa-cog"></i>
+    </button>
 
     <!-- Scripts -->
     <script src="assets/js/bundle.js"></script>

@@ -276,69 +276,57 @@ function preventHorizontalScroll() {
   );
 }
 
-// Scroll-based animations using Intersection Observer
+// Initialize scroll animations
 function initScrollAnimations() {
-  const observerOptions = {
-    threshold: 0.1,
+  const scrollElements = document.querySelectorAll("[data-scroll]");
+
+  if (scrollElements.length === 0) {
+    console.log("No scroll animation elements found");
+    return;
+  }
+
+  const options = {
+    root: null,
     rootMargin: "0px",
+    threshold: 0.1,
   };
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add("animated");
+        // Once animation is triggered, no need to observe anymore
         observer.unobserve(entry.target);
       }
     });
-  }, observerOptions);
+  }, options);
 
-  // Select all elements with data-scroll attribute
-  const animatedElements = document.querySelectorAll("[data-scroll]");
-
-  // Observe each element
-  animatedElements.forEach((el) => {
+  scrollElements.forEach((el) => {
     observer.observe(el);
-
-    // Check if element is already in viewport on page load
-    const rect = el.getBoundingClientRect();
-    const isInViewport =
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-
-    // If already in viewport, add animated class immediately
-    if (isInViewport) {
-      el.classList.add("animated");
-    }
   });
 
-  // Header scroll behavior
-  const header = document.querySelector(".header");
-  if (header) {
-    window.addEventListener("scroll", () => {
-      header.classList.toggle("scrolled", window.scrollY > 50);
-    });
-  }
+  console.log(
+    `Initialized scroll animations for ${scrollElements.length} elements`
+  );
 }
 
-// Header behavior (hide on scroll down, show on scroll up)
+// Initialize header behavior
 function initHeaderBehavior() {
-  let lastScroll = 0;
   const header = document.querySelector(".header");
+  if (!header) {
+    console.error("Header element not found");
+    return;
+  }
 
+  // Add scrolled class when scrolling down
   window.addEventListener("scroll", () => {
-    const currentScroll = window.pageYOffset;
-
-    if (currentScroll > lastScroll && currentScroll > 100) {
-      header.style.transform = "translateY(-100%)";
-    } else {
-      header.style.transform = "translateY(0)";
-    }
-
-    lastScroll = currentScroll;
+    header.classList.toggle("scrolled", window.scrollY > 50);
   });
+
+  // Check initial scroll position
+  if (window.scrollY > 50) {
+    header.classList.add("scrolled");
+  }
 }
 
 // Initialize newsletter subscription form
@@ -366,28 +354,72 @@ function initNewsletterForm() {
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 const body = document.querySelector("body");
 
-function initCart() {
-  document.querySelector(".cart-link").addEventListener("click", toggleCart);
-  document.querySelector(".close-cart").addEventListener("click", toggleCart);
-  document.getElementById("cartModal").addEventListener("click", (e) => {
-    if (e.target === document.getElementById("cartModal")) toggleCart();
-  });
+function toggleCart() {
+  const cartModal = document.getElementById("cartModal");
+  if (!cartModal) {
+    console.error("Cart modal not found");
+    return;
+  }
 
-  // Add checkout button listener
-  document
-    .querySelector(".checkout-btn")
-    .addEventListener("click", initiateCheckout);
-
+  // Always refresh cart contents when toggling
   renderCart();
+
+  // Toggle visibility with animation
+  cartModal.classList.toggle("active");
+
+  // Toggle body scrolling to prevent background scrolling when cart is open
+  document.body.classList.toggle("no-scroll");
+
+  // Log for debugging
+  console.log(
+    "Cart toggled:",
+    cartModal.classList.contains("active") ? "opened" : "closed"
+  );
 }
 
-function toggleCart() {
-  document.getElementById("cartModal").classList.toggle("active");
-  body.classList.toggle("no-scroll");
+function initCart() {
+  // Load saved cart from localStorage
+  loadCart();
+
+  // Add click handler to cart icon in header
+  const cartLink = document.querySelector(".cart-link");
+  if (cartLink) {
+    cartLink.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation(); // Prevent event bubbling
+      toggleCart();
+    });
+  } else {
+    console.error("Cart icon not found");
+  }
+
+  // Add click handler to close button
+  const closeCartBtn = document.querySelector(".close-cart");
+  if (closeCartBtn) {
+    closeCartBtn.addEventListener("click", function () {
+      toggleCart();
+    });
+  }
+
+  // Close cart when clicking outside the content
+  const cartModal = document.getElementById("cartModal");
+  if (cartModal) {
+    cartModal.addEventListener("click", function (e) {
+      // Only close if clicking on the backdrop (not the content)
+      if (e.target === cartModal) {
+        toggleCart();
+      }
+    });
+  }
+
+  // Initialize cart contents and counter
+  renderCart();
+  updateCartCount();
 }
 
 function addToCart(productId) {
   const product = products.find((p) => p.id === productId);
+  if (!product) return;
 
   // Check if product already exists in cart
   const existingItemIndex = cart.findIndex((item) => item.id === productId);
@@ -410,6 +442,15 @@ function addToCart(productId) {
 
   // Show confirmation message
   showMessage(`${product.name} добавлен в корзину`);
+
+  // Animate cart icon
+  const cartIcon = document.querySelector(".cart-link i");
+  if (cartIcon) {
+    cartIcon.classList.add("cart-pulse");
+    setTimeout(() => {
+      cartIcon.classList.remove("cart-pulse");
+    }, 700);
+  }
 }
 
 function removeFromCart(productId) {
@@ -432,45 +473,94 @@ function removeFromCart(productId) {
 
 function renderCart() {
   const container = document.getElementById("cartItems");
-  if (!container) return;
+  if (!container) {
+    console.error("Cart items container not found");
+    return;
+  }
 
+  // Calculate total cost
   const total = cart.reduce(
     (sum, item) => sum + item.price * (item.quantity || 1),
     0
   );
 
-  container.innerHTML = cart
-    .map(
-      (item) => `
-        <div class="cart-item">
-            <div class="cart-item-img" style="background-color: ${getRandomColor(
-              item.id
-            )};">
-                <span>${item.name.charAt(0)}</span>
-            </div>
-            <div class="cart-item-info">
-                <div class="cart-item-title">${item.name}</div>
-                <div class="cart-item-price">${item.price} ₽</div>
-            </div>
-            <div class="quantity-controls">
-                <button class="quantity-btn" onclick="removeFromCart(${
-                  item.id
-                })">-</button>
-                <span class="quantity">${item.quantity || 1}</span>
-                <button class="quantity-btn" onclick="addToCart(${
-                  item.id
-                })">+</button>
-            </div>
-        </div>
-    `
-    )
-    .join("");
-
-  document.getElementById("cartTotal").textContent = `${total} ₽`;
-
-  // Show empty cart message
+  // Empty cart message
   if (cart.length === 0) {
-    container.innerHTML = '<div class="empty-cart">Ваша корзина пуста</div>';
+    container.innerHTML = `
+      <div class="empty-cart">
+        <i class="fas fa-shopping-cart"></i>
+        <p>Ваша корзина пуста</p>
+        <small>Добавьте товары, чтобы продолжить покупки</small>
+      </div>
+    `;
+
+    const totalElement = document.getElementById("cartTotal");
+    if (totalElement) {
+      totalElement.textContent = "0 ₽";
+    }
+    return;
+  }
+
+  // Clear container before adding items
+  container.innerHTML = "";
+
+  // Add each cart item with staggered animation
+  cart.forEach((item, index) => {
+    const itemElement = document.createElement("div");
+    itemElement.className = "cart-item";
+    itemElement.style.animationDelay = `${index * 0.05}s`;
+
+    let itemImage;
+    if (item.image) {
+      itemImage = `background-image: url('${item.image}')`;
+    } else {
+      itemImage = `background-color: ${item.color || getRandomColor(item.id)}`;
+    }
+
+    itemElement.innerHTML = `
+      <div class="cart-item-img" style="${itemImage}">
+        ${!item.image ? `<span>${item.name.charAt(0)}</span>` : ""}
+      </div>
+      <div class="cart-item-info">
+        <div class="cart-item-title">${item.name}</div>
+        <div class="cart-item-price">${item.price} ₽</div>
+        <span class="cart-item-category">${item.category}</span>
+      </div>
+      <div class="quantity-controls">
+        <button class="quantity-btn" onclick="removeFromCart(${item.id})">
+          <i class="fas fa-minus"></i>
+        </button>
+        <span class="quantity">${item.quantity || 1}</span>
+        <button class="quantity-btn" onclick="addToCart(${item.id})">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    `;
+
+    container.appendChild(itemElement);
+  });
+
+  // Update total price
+  const totalElement = document.getElementById("cartTotal");
+  if (totalElement) {
+    totalElement.textContent = `${total} ₽`;
+
+    // Add animation to total when updated
+    totalElement.classList.add("total-updated");
+    setTimeout(() => {
+      totalElement.classList.remove("total-updated");
+    }, 500);
+  }
+
+  // Make sure checkout button has event listener
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  if (checkoutBtn) {
+    // Remove any existing event listeners
+    const newCheckoutBtn = checkoutBtn.cloneNode(true);
+    checkoutBtn.parentNode.replaceChild(newCheckoutBtn, checkoutBtn);
+
+    // Add new event listener
+    newCheckoutBtn.addEventListener("click", initiateCheckout);
   }
 }
 
@@ -551,8 +641,8 @@ function initiateCheckout() {
       </div>
       
       <div class="checkout-buttons">
-        <button class="back-to-cart" id="backToCart">Назад в корзину</button>
-        <button class="complete-order" id="completeOrder">Оформить заказ</button>
+        <button class="back-to-cart" id="backToCart"><i class="fas fa-arrow-left"></i> Назад</button>
+        <button class="complete-order" id="completeOrder"><i class="fas fa-check"></i> Оформить заказ</button>
       </div>
     </div>
   `;
@@ -641,102 +731,90 @@ function completeOrder() {
 }
 
 // ====== PRODUCTS ======
-// Render all products grouped by age
+// Render products in product grids
 function renderProducts() {
-  ageGroups.forEach((age) => {
-    const container = document.querySelector(`[data-age="${age}"]`);
-    if (!container) return;
+  // Get all product grid containers
+  const productGrids = document.querySelectorAll(".products-grid");
 
-    const filteredProducts = products.filter((p) => p.age === age);
-    renderProductsToContainer(container, filteredProducts);
+  productGrids.forEach((grid) => {
+    const age = grid.dataset.age;
+    // Filter products by age
+    const ageProducts = products.filter((product) => product.age === age);
 
-    // Initialize category filters for this age group
-    initCategoryFilters(age, filteredProducts);
-  });
-}
+    // Clear current content
+    grid.innerHTML = "";
 
-function renderProductsToContainer(container, products) {
-  container.innerHTML = products
-    .map(
-      (product) => `
-          <div class="product-card" data-scroll="slide-up" data-category="${
-            product.category
-          }">
-              <div class="product-image-container">
-                  <div class="product-image-placeholder" style="background-color: ${getRandomColor(
-                    product.id
-                  )};">
-                      <span>${product.name.charAt(0)}</span>
-                  </div>
-              </div>
-              <div class="product-content">
-                  <h3 class="product-title">${product.name}</h3>
-                  <p class="product-price">${product.price} ₽</p>
-                  <button class="add-to-cart" onclick="addToCart(${
-                    product.id
-                  })">В корзину</button>
-              </div>
-          </div>
-      `
-    )
-    .join("");
-}
+    // Check if there are products for this age
+    if (ageProducts.length === 0) {
+      grid.innerHTML = `<div class="no-products">
+        <i class="fas fa-box-open"></i>
+        <p>Нет товаров для этой возрастной группы</p>
+      </div>`;
+      return;
+    }
 
-// Initialize category filters
-function initCategoryFilters(age, products) {
-  const section = document.querySelector(`#age-${age}`);
-  if (!section) return;
+    // Add products to grid
+    ageProducts.forEach((product) => {
+      const productCard = document.createElement("div");
+      productCard.className = "product-card";
+      productCard.dataset.category = product.category;
 
-  const filterButtons = section.querySelectorAll(".filter-btn");
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      // Remove active class from all buttons
-      filterButtons.forEach((btn) => btn.classList.remove("active"));
-
-      // Add active class to clicked button
-      this.classList.add("active");
-
-      const category = this.getAttribute("data-category");
-      const container = section.querySelector(".products-grid");
-
-      if (category === "all") {
-        // Show all products
-        renderProductsToContainer(container, products);
+      // Determine product image
+      let productImage = "";
+      if (product.image) {
+        productImage = `<div class="product-img" style="background-image: url('${product.image}')"></div>`;
       } else {
-        // Filter products by category
-        const filteredProducts = products.filter(
-          (p) => p.category === category
-        );
-        renderProductsToContainer(container, filteredProducts);
+        // Use a colored placeholder with the first letter
+        const bgColor = product.color || getRandomColor(product.id);
+        productImage = `
+          <div class="product-img product-placeholder" style="background-color: ${bgColor}">
+            <span>${product.name.charAt(0)}</span>
+          </div>
+        `;
       }
 
-      // Re-initialize scroll animations for new products
-      initScrollAnimationsForElements(
-        container.querySelectorAll("[data-scroll]")
-      );
+      productCard.innerHTML = `
+        ${productImage}
+        <div class="product-info">
+          <h3 class="product-title">${product.name}</h3>
+          <div class="product-details">
+            <span class="product-price">${product.price} ₽</span>
+            <span class="product-category">${product.category}</span>
+          </div>
+          <button class="add-to-cart" onclick="addToCart(${product.id})">
+            <i class="fas fa-cart-plus"></i> В корзину
+          </button>
+        </div>
+      `;
+
+      grid.appendChild(productCard);
     });
-  });
-}
 
-// Initialize scroll animations for specific elements
-function initScrollAnimationsForElements(elements) {
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: "0px",
-  };
+    // Initialize filter buttons for this grid
+    const filterBtns = grid
+      .closest(".age-section")
+      .querySelectorAll(".filter-btn");
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const category = this.dataset.category;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("animated");
-        observer.unobserve(entry.target);
-      }
+        // Remove active class from all buttons
+        filterBtns.forEach((b) => b.classList.remove("active"));
+
+        // Add active class to clicked button
+        this.classList.add("active");
+
+        // Filter products
+        const productCards = grid.querySelectorAll(".product-card");
+        productCards.forEach((card) => {
+          if (category === "all" || card.dataset.category === category) {
+            card.style.display = "flex";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      });
     });
-  }, observerOptions);
-
-  elements.forEach((el) => {
-    observer.observe(el);
   });
 }
 
@@ -770,7 +848,8 @@ function filterProducts(query) {
       return (
         p.age === age &&
         (p.name.toLowerCase().includes(query) ||
-          p.price.toString().includes(query))
+          p.price.toString().includes(query) ||
+          p.category.toLowerCase().includes(query))
       );
     });
 
@@ -778,28 +857,8 @@ function filterProducts(query) {
       foundProducts = true;
     }
 
-    container.innerHTML = filteredProducts
-      .map(
-        (product) => `
-            <div class="product-card" data-scroll="slide-up">
-                <div class="product-image-container">
-                    <div class="product-image-placeholder" style="background-color: ${getRandomColor(
-                      product.id
-                    )};">
-                        <span>${product.name.charAt(0)}</span>
-                    </div>
-                </div>
-                <div class="product-content">
-                    <h3 class="product-title">${product.name}</h3>
-                    <p class="product-price">${product.price} ₽</p>
-                    <button class="add-to-cart" onclick="addToCart(${
-                      product.id
-                    })">В корзину</button>
-                </div>
-            </div>
-        `
-      )
-      .join("");
+    // Use the same renderProductsToContainer function for consistency
+    renderProductsToContainer(container, filteredProducts);
 
     // Show no results message if empty
     if (filteredProducts.length === 0) {
@@ -812,7 +871,8 @@ function filterProducts(query) {
     ageGroups.forEach((age) => {
       const container = document.querySelector(`[data-age="${age}"]`);
       if (container && age === ageGroups[0]) {
-        container.innerHTML = '<div class="no-results">Товары не найдены</div>';
+        container.innerHTML =
+          '<div class="no-results"><i class="fas fa-search"></i> Товары не найдены</div>';
       }
     });
   }
@@ -865,10 +925,11 @@ function initPopularItems() {
         <div class="product-content">
           <h3 class="product-title">${product.name}</h3>
           <p class="product-price">${product.price} ₽</p>
+          <p class="product-category">Категория: ${product.category}</p>
           <p class="product-age">Возраст: ${product.age} лет</p>
           <button class="add-to-cart" onclick="addToCart(${
             product.id
-          })">В корзину</button>
+          })"><i class="fas fa-shopping-cart"></i> В корзину</button>
         </div>
       </div>
     `;
@@ -941,59 +1002,414 @@ function initPopularItems() {
   };
 }
 
+// Function to add all products from a category to cart
+function addAllToCart(age, category = null) {
+  // Filter products by age and optionally by category
+  let filteredProducts = products.filter((product) => product.age === age);
+
+  if (category && category !== "all") {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.category === category
+    );
+  }
+
+  if (filteredProducts.length === 0) {
+    showNotification("Нет товаров для добавления в корзину", "error");
+    return;
+  }
+
+  // Add each product to cart
+  let addedCount = 0;
+  filteredProducts.forEach((product) => {
+    // Check if product already exists in cart
+    const existingItemIndex = cart.findIndex((item) => item.id === product.id);
+
+    if (existingItemIndex !== -1) {
+      // If product exists, increment quantity
+      if (!cart[existingItemIndex].quantity) {
+        cart[existingItemIndex].quantity = 1;
+      }
+      cart[existingItemIndex].quantity += 1;
+    } else {
+      // Add new product with quantity 1
+      const productCopy = { ...product, quantity: 1 };
+      cart.push(productCopy);
+    }
+    addedCount++;
+  });
+
+  // Save to localStorage
+  saveCart();
+
+  // Update cart UI
+  updateCartCount();
+  renderCart();
+
+  // Show confirmation
+  showNotification(`Добавлено товаров: ${addedCount}`, "success");
+
+  // Animate cart icon
+  const cartIcon = document.querySelector(".cart-link i");
+  if (cartIcon) {
+    cartIcon.classList.add("cart-pulse");
+    setTimeout(() => {
+      cartIcon.classList.remove("cart-pulse");
+    }, 700);
+  }
+}
+
 // Expose functions to global scope
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.toggleCart = toggleCart;
 window.showSlide = showSlide;
 window.changeSlide = changeSlide;
+window.addAllToCart = addAllToCart;
 
 // Initialize smooth scrolling for navigation links
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
+      // Skip for cart link
+      if (this.classList.contains("cart-link")) return;
+
       e.preventDefault();
 
       const targetId = this.getAttribute("href");
-
-      // Skip if it's the cart link
-      if (this.classList.contains("cart-link")) {
-        toggleCart();
-        return;
-      }
-
-      if (targetId === "#") {
-        // If it's just a # link, scroll to top
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-        return;
-      }
+      if (!targetId || targetId === "#") return;
 
       const targetElement = document.querySelector(targetId);
-
-      if (targetElement) {
-        const headerHeight = document.querySelector(".header").offsetHeight;
-        const targetPosition =
-          targetElement.getBoundingClientRect().top +
-          window.pageYOffset -
-          headerHeight;
-
-        window.scrollTo({
-          top: targetPosition,
-          behavior: "smooth",
-        });
+      if (!targetElement) {
+        console.error(`Target element ${targetId} not found`);
+        return;
       }
+
+      // Get header height for offset
+      const headerHeight = document.querySelector(".header").offsetHeight;
+      const yOffset = -headerHeight - 10; // Extra padding
+
+      const y =
+        targetElement.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset;
+
+      window.scrollTo({
+        top: y,
+        behavior: "smooth",
+      });
+
+      // Add active class to current nav link
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.classList.remove("active");
+      });
+      this.classList.add("active");
     });
   });
 }
+
+/**
+ * Shows a notification message to the user
+ * @param {string} message - The message to display
+ * @param {string} type - The type of notification (success, error, info)
+ */
+function showNotification(message, type = "info") {
+  if (!message) {
+    console.error("Notification message is required");
+    return;
+  }
+
+  const notification = document.getElementById("notification");
+  const notificationMessage = document.getElementById("notificationMessage");
+
+  if (!notification || !notificationMessage) {
+    // Fallback to alert if notification elements not found
+    console.error("Notification elements not found, falling back to alert");
+    alert(message);
+    return;
+  }
+
+  // Set the message
+  notificationMessage.textContent = message;
+
+  // Remove all classes and add the type class
+  notification.className = "notification";
+  notification.classList.add(`notification-${type}`);
+
+  // Show the notification
+  notification.classList.add("show");
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    notification.classList.remove("show");
+  }, 3000);
+}
+
+// Load cart from localStorage
+function loadCart() {
+  const savedCart = localStorage.getItem("cart");
+  if (savedCart) {
+    try {
+      cart = JSON.parse(savedCart);
+      console.log("Cart loaded from localStorage:", cart.length, "items");
+    } catch (e) {
+      console.error("Error parsing cart from localStorage:", e);
+      cart = [];
+    }
+  } else {
+    cart = [];
+  }
+}
+
+// Save cart to localStorage
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// ====== ADMIN PANEL ======
+function initAdminPanel() {
+  // Admin button
+  const adminBtn = document.getElementById("adminBtn");
+  const adminModal = document.getElementById("adminModal");
+  const closeAdminBtn = document.querySelector(".close-admin");
+
+  if (adminBtn && adminModal) {
+    // Toggle admin panel
+    adminBtn.addEventListener("click", function () {
+      adminModal.classList.add("active");
+      renderAdminProducts(); // Populate products list
+    });
+
+    // Close admin panel
+    if (closeAdminBtn) {
+      closeAdminBtn.addEventListener("click", function () {
+        adminModal.classList.remove("active");
+      });
+    }
+
+    // Close when clicking outside
+    adminModal.addEventListener("click", function (e) {
+      if (e.target === adminModal) {
+        adminModal.classList.remove("active");
+      }
+    });
+
+    // Add product form
+    const addProductForm = document.getElementById("addProductForm");
+    if (addProductForm) {
+      addProductForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        addNewProduct();
+      });
+    }
+  }
+}
+
+// Add a new product
+function addNewProduct() {
+  // Get form values
+  const name = document.getElementById("productName").value;
+  const price = parseInt(document.getElementById("productPrice").value);
+  const age = document.getElementById("productAge").value;
+  const category = document.getElementById("productCategory").value;
+  const color = document.getElementById("productColor").value;
+
+  // Validate inputs
+  if (!name || !price || !age || !category) {
+    showNotification("Пожалуйста, заполните все поля", "error");
+    return;
+  }
+
+  // Generate a new ID (max + 1)
+  const newId = Math.max(...products.map((p) => p.id), 0) + 1;
+
+  // Create new product object
+  const newProduct = {
+    id: newId,
+    name: name,
+    price: price,
+    age: age,
+    category: category,
+    color: color, // Store custom color
+  };
+
+  // Add to products array
+  products.push(newProduct);
+
+  // Save to localStorage
+  saveProducts();
+
+  // Refresh admin products list
+  renderAdminProducts();
+
+  // Refresh displayed products
+  renderProducts();
+
+  // Reset form
+  document.getElementById("addProductForm").reset();
+
+  // Show success message
+  showNotification(`Товар "${name}" успешно добавлен`, "success");
+}
+
+// Render products in admin panel
+function renderAdminProducts() {
+  const container = document.getElementById("adminProductsList");
+  if (!container) return;
+
+  // Sort products by ID
+  const sortedProducts = [...products].sort((a, b) => b.id - a.id);
+
+  // Generate HTML for each product
+  container.innerHTML = sortedProducts
+    .map(
+      (product) => `
+    <div class="admin-product-item" data-id="${product.id}">
+      <div class="admin-product-color" style="background-color: ${
+        product.color || getRandomColor(product.id)
+      }"></div>
+      <div class="admin-product-info">
+        <div class="admin-product-name">${product.name}</div>
+        <div class="admin-product-details">
+          <span>${product.price} ₽</span>
+          <span>${product.age}</span>
+          <span>${product.category}</span>
+        </div>
+      </div>
+      <div class="admin-product-actions">
+        <div class="admin-product-action" onclick="editProduct(${product.id})">
+          <i class="fas fa-edit"></i>
+        </div>
+        <div class="admin-product-action" onclick="deleteProduct(${
+          product.id
+        })">
+          <i class="fas fa-trash"></i>
+        </div>
+      </div>
+    </div>
+  `
+    )
+    .join("");
+}
+
+// Edit product
+function editProduct(id) {
+  const product = products.find((p) => p.id === id);
+  if (!product) return;
+
+  // Fill form with product data
+  document.getElementById("productName").value = product.name;
+  document.getElementById("productPrice").value = product.price;
+  document.getElementById("productAge").value = product.age;
+  document.getElementById("productCategory").value = product.category;
+  if (product.color) {
+    document.getElementById("productColor").value = product.color;
+  }
+
+  // Change form submit button
+  const submitBtn = document.querySelector(".add-product-btn");
+  submitBtn.innerHTML = '<i class="fas fa-save"></i> Сохранить изменения';
+  submitBtn.dataset.editId = id;
+
+  // Change form submit behavior
+  const form = document.getElementById("addProductForm");
+  const originalSubmit = form.onsubmit;
+
+  form.onsubmit = function (e) {
+    e.preventDefault();
+
+    // Update product data
+    product.name = document.getElementById("productName").value;
+    product.price = parseInt(document.getElementById("productPrice").value);
+    product.age = document.getElementById("productAge").value;
+    product.category = document.getElementById("productCategory").value;
+    product.color = document.getElementById("productColor").value;
+
+    // Save changes
+    saveProducts();
+
+    // Reset form
+    form.reset();
+    submitBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить товар';
+    delete submitBtn.dataset.editId;
+
+    // Restore original submit behavior
+    form.onsubmit = originalSubmit;
+
+    // Refresh products
+    renderAdminProducts();
+    renderProducts();
+
+    // Show success message
+    showNotification(`Товар "${product.name}" успешно обновлен`, "success");
+  };
+}
+
+// Delete product
+function deleteProduct(id) {
+  if (!confirm("Вы уверены, что хотите удалить этот товар?")) return;
+
+  const index = products.findIndex((p) => p.id === id);
+  if (index !== -1) {
+    const productName = products[index].name;
+    products.splice(index, 1);
+
+    // Save changes
+    saveProducts();
+
+    // Refresh products
+    renderAdminProducts();
+    renderProducts();
+
+    // Show success message
+    showNotification(`Товар "${productName}" успешно удален`, "success");
+  }
+}
+
+// Save products to localStorage
+function saveProducts() {
+  localStorage.setItem("products", JSON.stringify(products));
+}
+
+// Load products from localStorage
+function loadProducts() {
+  const savedProducts = localStorage.getItem("products");
+  if (savedProducts) {
+    try {
+      // Merge with existing products, keeping original ones
+      const parsedProducts = JSON.parse(savedProducts);
+
+      // Create a map of existing products by ID
+      const existingProductsMap = {};
+      products.forEach((p) => {
+        existingProductsMap[p.id] = true;
+      });
+
+      // Add only new products
+      parsedProducts.forEach((p) => {
+        if (!existingProductsMap[p.id]) {
+          products.push(p);
+        }
+      });
+
+      console.log("Custom products loaded:", parsedProducts.length);
+    } catch (e) {
+      console.error("Error parsing products from localStorage:", e);
+    }
+  }
+}
+
+// Expose admin functions
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
 
 // Initialize the application when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, starting initialization...");
 
   try {
+    // Load custom products
+    loadProducts();
+
     // Initialize utilities
     preventHorizontalScroll();
     console.log("Horizontal scroll prevention initialized");
@@ -1022,6 +1438,10 @@ document.addEventListener("DOMContentLoaded", () => {
     initCart();
     console.log("Cart initialized");
 
+    // Initialize admin panel
+    initAdminPanel();
+    console.log("Admin panel initialized");
+
     // Initialize forms
     initNewsletterForm();
     console.log("Newsletter form initialized");
@@ -1031,3 +1451,12 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Error during initialization:", error);
   }
 });
+
+// Expose functions to global scope for HTML event handlers
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.addAllToCart = addAllToCart;
+window.toggleCart = toggleCart;
+window.initiateCheckout = initiateCheckout;
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
