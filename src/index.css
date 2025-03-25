@@ -1,0 +1,380 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #ff6b6b;
+    --color-primary-dark: #ff5252;
+    --color-secondary: 78, 205, 196;
+    --color-accent: 255, 230, 109;
+    --color-background: 247, 247, 247;
+    --color-text: 44, 62, 80;
+    --color-gray-100: 243, 244, 246;
+    --color-gray-200: 229, 231, 235;
+    --color-gray-300: 209, 213, 219;
+    --color-gray-400: 156, 163, 175;
+    --color-gray-500: 107, 114, 128;
+    --color-gray-600: 75, 85, 99;
+    --color-gray-700: 55, 65, 81;
+    --color-gray-800: 31, 41, 55;
+    --color-gray-900: 17, 24, 39;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold text-text;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  h5 {
+    @apply text-lg md:text-xl;
+  }
+  h6 {
+    @apply text-base md:text-lg;
+  }
+}
+
+@layer components {
+  /* Layout */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-gray-900 mb-8;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-white hover:bg-secondary/90 focus:ring-secondary/50;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
+  }
+
+  .btn-ghost {
+    @apply btn text-gray-600 hover:bg-gray-100 focus:ring-gray-200;
+  }
+
+  /* Forms */
+  .input {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .form-group {
+    @apply space-y-1;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200;
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  .card-footer {
+    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply text-gray-600 hover:text-primary transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-primary font-medium;
+  }
+
+  /* Product Cards */
+  .product-card {
+    @apply relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden;
+  }
+
+  .product-image {
+    @apply aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-t-lg bg-gray-200;
+  }
+
+  .product-image img {
+    @apply h-full w-full object-cover object-center transition-opacity duration-200;
+  }
+
+  .product-card:hover .product-image img {
+    @apply opacity-75;
+  }
+
+  .product-info {
+    @apply p-4;
+  }
+
+  .product-title {
+    @apply text-sm font-medium text-gray-900;
+  }
+
+  .product-category {
+    @apply text-sm text-gray-500;
+  }
+
+  .product-price {
+    @apply mt-2 text-lg font-semibold text-primary;
+  }
+
+  /* Cart */
+  .cart-item {
+    @apply flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm;
+  }
+
+  .cart-item-image {
+    @apply w-20 h-20 rounded-lg overflow-hidden;
+  }
+
+  .cart-item-info {
+    @apply flex-1;
+  }
+
+  .cart-item-title {
+    @apply font-medium text-gray-900;
+  }
+
+  .cart-item-quantity {
+    @apply flex items-center space-x-2;
+  }
+
+  .quantity-btn {
+    @apply p-1 rounded-full hover:bg-gray-100 transition-colors;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary/10 text-primary;
+  }
+
+  .badge-secondary {
+    @apply badge bg-secondary/10 text-secondary;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  /* Alerts */
+  .alert {
+    @apply p-4 rounded-lg border;
+  }
+
+  .alert-success {
+    @apply alert bg-green-50 border-green-200 text-green-800;
+  }
+
+  .alert-warning {
+    @apply alert bg-yellow-50 border-yellow-200 text-yellow-800;
+  }
+
+  .alert-error {
+    @apply alert bg-red-50 border-red-200 text-red-800;
+  }
+
+  .alert-info {
+    @apply alert bg-blue-50 border-blue-200 text-blue-800;
+  }
+
+  /* Modals */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50;
+  }
+
+  .modal-container {
+    @apply fixed inset-0 z-50 overflow-y-auto;
+  }
+
+  .modal-content {
+    @apply relative bg-white rounded-xl shadow-xl max-w-lg mx-auto my-8;
+  }
+
+  .modal-header {
+    @apply px-6 py-4 border-b border-gray-200;
+  }
+
+  .modal-body {
+    @apply px-6 py-4;
+  }
+
+  .modal-footer {
+    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
+  }
+
+  /* Footer */
+  .footer {
+    @apply bg-white border-t border-gray-200 mt-12;
+  }
+
+  .footer-content {
+    @apply max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8;
+  }
+
+  .footer-grid {
+    @apply grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .footer-section h3 {
+    @apply text-sm font-semibold text-gray-900 tracking-wider uppercase;
+  }
+
+  .footer-section ul {
+    @apply mt-4 space-y-4;
+  }
+
+  .footer-section ul li a {
+    @apply text-base text-gray-500 hover:text-gray-900;
+  }
+
+  .footer-bottom {
+    @apply border-t border-gray-200 mt-8 pt-8;
+  }
+
+  /* Hero Section */
+  .hero {
+    @apply relative bg-white overflow-hidden;
+  }
+
+  .hero-content {
+    @apply max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8 text-center;
+  }
+
+  .hero-title {
+    @apply text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl;
+  }
+
+  .hero-subtitle {
+    @apply mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl;
+  }
+
+  /* Benefits Section */
+  .benefits-grid {
+    @apply grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .benefit-card {
+    @apply text-center p-6 bg-white rounded-lg shadow-sm;
+  }
+
+  .benefit-icon {
+    @apply inline-flex items-center justify-center w-12 h-12 rounded-md bg-primary/10 text-primary mb-4;
+  }
+
+  /* Featured Products */
+  .products-grid {
+    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  /* Checkout */
+  .checkout-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+  }
+
+  .order-summary {
+    @apply card;
+  }
+
+  .order-item {
+    @apply py-4 flex justify-between border-b border-gray-200 last:border-0;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-wrap {
+    @apply break-words;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
