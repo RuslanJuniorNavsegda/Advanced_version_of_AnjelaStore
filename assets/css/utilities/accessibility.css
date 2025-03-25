@@ -1,0 +1,243 @@
+/* ==========================================================================
+   Accessibility Styles
+   ========================================================================== */
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus Styles */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-color);
+  color: var(--white);
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* High Contrast Mode */
+@media (forced-colors: active) {
+  * {
+    border-color: ButtonText;
+  }
+
+  :focus {
+    outline: 2px solid ButtonText;
+    outline-offset: 2px;
+  }
+
+  .sr-only {
+    border: 0;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Text */
+.high-contrast-text {
+  text-shadow: 0 0 2px var(--dark-color);
+}
+
+/* Focus Ring */
+.focus-ring {
+  position: relative;
+}
+
+.focus-ring:focus::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  border: 2px solid var(--primary-color);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Keyboard Focus */
+.keyboard-focus {
+  outline: none;
+}
+
+.keyboard-focus:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* ARIA Hidden */
+[aria-hidden="true"] {
+  display: none;
+}
+
+/* ARIA Live Regions */
+[aria-live="polite"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[aria-live="assertive"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ARIA Labels */
+[aria-label] {
+  position: relative;
+}
+
+[aria-label]::before {
+  content: attr(aria-label);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ARIA Described By */
+[aria-describedby] {
+  position: relative;
+}
+
+[aria-describedby]::after {
+  content: attr(aria-describedby);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ARIA Required */
+[aria-required="true"]::after {
+  content: "*";
+  color: var(--error-color);
+  margin-left: 4px;
+}
+
+/* ARIA Invalid */
+[aria-invalid="true"] {
+  border-color: var(--error-color);
+}
+
+/* ARIA Disabled */
+[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ARIA Busy */
+[aria-busy="true"] {
+  position: relative;
+}
+
+[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ARIA Expanded */
+[aria-expanded="true"] {
+  display: block;
+}
+
+[aria-expanded="false"] {
+  display: none;
+}
+
+/* ARIA Selected */
+[aria-selected="true"] {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+/* ARIA Checked */
+[aria-checked="true"] {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+/* ARIA Pressed */
+[aria-pressed="true"] {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+/* ARIA Current */
+[aria-current="true"] {
+  background-color: var(--primary-color);
+  color: var(--white);
+}

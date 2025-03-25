@@ -1,226 +1,291 @@
-import {
-  products,
-  ageGroups,
-  popularProductIds,
-  getRandomColor,
-} from "./config.js";
+import { config, utils } from "./config.js";
 
-// Render all products grouped by age
-export function renderProducts() {
-  ageGroups.forEach((age) => {
-    const container = document.querySelector(`[data-age="${age}"]`);
-    if (!container) return;
+// Products module
+export const productsModule = {
+  // Render products by age group
+  renderProducts() {
+    const ageGroups = config.ageGroups;
+    const products = config.products;
 
-    const filteredProducts = products.filter((p) => p.age === age);
-
-    container.innerHTML = filteredProducts
-      .map(
-        (product) => `
-            <div class="product-card" data-scroll="slide-up">
-                <div class="product-image-container">
-                    <div class="product-image-placeholder" style="background-color: ${getRandomColor(
-                      product.id
-                    )};">
-                        <span>${product.name.charAt(0)}</span>
-                    </div>
-                </div>
-                <div class="product-content">
-                    <h3 class="product-title">${product.name}</h3>
-                    <p class="product-price">${product.price} ₽</p>
-                    <button class="add-to-cart" onclick="window.cartModule.addToCart(${
-                      product.id
-                    })">В корзину</button>
-                </div>
-            </div>
-        `
-      )
-      .join("");
-  });
-}
-
-// Initialize search functionality
-export function initSearch() {
-  const searchInput = document.getElementById("searchInput");
-
-  if (searchInput) {
-    searchInput.addEventListener("input", function () {
-      const query = this.value.toLowerCase().trim();
-
-      if (query.length > 1) {
-        filterProducts(query);
-      } else {
-        // If search is cleared, show all products
-        renderProducts();
-      }
-    });
-  }
-}
-
-// Filter products based on search query
-function filterProducts(query) {
-  let foundProducts = false;
-
-  ageGroups.forEach((age) => {
-    const container = document.querySelector(`[data-age="${age}"]`);
-    if (!container) return;
-
-    const filteredProducts = products.filter((p) => {
-      return (
-        p.age === age &&
-        (p.name.toLowerCase().includes(query) ||
-          p.price.toString().includes(query))
-      );
-    });
-
-    if (filteredProducts.length > 0) {
-      foundProducts = true;
-    }
-
-    container.innerHTML = filteredProducts
-      .map(
-        (product) => `
-            <div class="product-card" data-scroll="slide-up">
-                <div class="product-image-container">
-                    <div class="product-image-placeholder" style="background-color: ${getRandomColor(
-                      product.id
-                    )};">
-                        <span>${product.name.charAt(0)}</span>
-                    </div>
-                </div>
-                <div class="product-content">
-                    <h3 class="product-title">${product.name}</h3>
-                    <p class="product-price">${product.price} ₽</p>
-                    <button class="add-to-cart" onclick="window.cartModule.addToCart(${
-                      product.id
-                    })">В корзину</button>
-                </div>
-            </div>
-        `
-      )
-      .join("");
-
-    // Show no results message if empty
-    if (filteredProducts.length === 0) {
-      container.innerHTML = "";
-    }
-  });
-
-  // If no products found at all
-  if (!foundProducts) {
     ageGroups.forEach((age) => {
-      const container = document.querySelector(`[data-age="${age}"]`);
-      if (container && age === ageGroups[0]) {
-        container.innerHTML = '<div class="no-results">Товары не найдены</div>';
-      }
-    });
-  }
-}
+      const container = document.querySelector(
+        `.products-grid[data-age="${age}"]`
+      );
+      if (!container) return;
 
-// Initialize popular products slider
-export function initPopularItems() {
-  // Get popular products
-  const popularProducts = products.filter((product) =>
-    popularProductIds.includes(product.id)
-  );
-
-  // Create slider container
-  const slider = document.getElementById("popularSlider");
-  const sliderDotsContainer = document.getElementById("sliderDots");
-
-  if (!slider || !sliderDotsContainer) return;
-
-  // Create slider content
-  const sliderWrapper = document.createElement("div");
-  sliderWrapper.className = "slider-wrapper";
-
-  // Add products to slider
-  popularProducts.forEach((product, index) => {
-    const slide = document.createElement("div");
-    slide.className = "slider-slide";
-    slide.style.display = index === 0 ? "flex" : "none";
-    slide.dataset.index = index;
-
-    slide.innerHTML = `
-      <div class="slider-product-card">
-        <div class="product-image-container">
-          <div class="product-image-placeholder" style="background-color: ${getRandomColor(
-            product.id
-          )};">
-            <span>${product.name.charAt(0)}</span>
+      // Show loading state
+      container.innerHTML = `
+        <div class="product-card loading">
+          <div class="product-image-container">
+            <div class="product-image"></div>
+          </div>
+          <div class="product-content">
+            <h3 class="product-title"></h3>
+            <p class="product-price"></p>
           </div>
         </div>
-        <div class="product-content">
-          <h3 class="product-title">${product.name}</h3>
-          <p class="product-price">${product.price} ₽</p>
-          <p class="product-age">Возраст: ${product.age} лет</p>
-          <button class="add-to-cart" onclick="window.cartModule.addToCart(${
-            product.id
-          })">В корзину</button>
+      `.repeat(3);
+
+      // Filter products by age
+      const ageProducts = products.filter((product) => product.age === age);
+
+      // Render products
+      setTimeout(() => {
+        container.innerHTML = ageProducts
+          .map(
+            (product) => `
+            <div class="product-card" data-product-id="${product.id}">
+              <div class="product-image-container">
+                <img
+                  src="${product.image}"
+                  alt="${product.name}"
+                  class="product-image"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-content">
+                <h3 class="product-title">${product.name}</h3>
+                <p class="product-price">${utils.formatPrice(product.price)}</p>
+                <p class="product-age">${product.age} лет</p>
+                <button class="btn btn-primary add-to-cart">
+                  В корзину
+                </button>
+              </div>
+            </div>
+          `
+          )
+          .join("");
+
+        // Add event listeners
+        container.querySelectorAll(".product-card").forEach((card) => {
+          const addToCartBtn = card.querySelector(".add-to-cart");
+          if (addToCartBtn) {
+            addToCartBtn.addEventListener("click", () => {
+              const productId = parseInt(card.dataset.productId);
+              window.dispatchEvent(
+                new CustomEvent("addToCart", { detail: { productId } })
+              );
+            });
+          }
+        });
+      }, 500);
+    });
+  },
+
+  // Initialize search functionality
+  initSearch() {
+    const searchInput = document.querySelector("#searchInput");
+    if (!searchInput) return;
+
+    const debouncedSearch = utils.debounce((query) => {
+      this.filterProducts(query);
+    }, 300);
+
+    searchInput.addEventListener("input", (e) => {
+      debouncedSearch(e.target.value.toLowerCase());
+    });
+  },
+
+  // Filter products based on search query
+  filterProducts(query) {
+    const products = config.products;
+    const containers = document.querySelectorAll(".products-grid");
+    let hasResults = false;
+
+    containers.forEach((container) => {
+      const cards = container.querySelectorAll(".product-card");
+      cards.forEach((card) => {
+        const title = card
+          .querySelector(".product-title")
+          .textContent.toLowerCase();
+        const price = card
+          .querySelector(".product-price")
+          .textContent.toLowerCase();
+        const age = card
+          .querySelector(".product-age")
+          .textContent.toLowerCase();
+
+        if (
+          title.includes(query) ||
+          price.includes(query) ||
+          age.includes(query)
+        ) {
+          card.style.display = "";
+          hasResults = true;
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      // Show no results message
+      const noResults = container.querySelector(".no-results");
+      if (!hasResults && !noResults) {
+        container.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <p>Товары не найдены</p>
+          </div>
+        `
+        );
+      } else if (hasResults && noResults) {
+        noResults.remove();
+      }
+    });
+  },
+
+  // Initialize popular items slider
+  initPopularItems() {
+    const slider = document.querySelector("#popularSlider");
+    if (!slider) return;
+
+    const popularProducts = config.products.filter((product) =>
+      config.popularProductIds.includes(product.id)
+    );
+
+    // Create slider wrapper
+    const wrapper = document.createElement("div");
+    wrapper.className = "slider-wrapper";
+    slider.appendChild(wrapper);
+
+    // Create slides
+    popularProducts.forEach((product) => {
+      const slide = document.createElement("div");
+      slide.className = "slider-slide";
+      slide.innerHTML = `
+        <div class="product-card">
+          <div class="product-image-container">
+            <img
+              src="${product.image}"
+              alt="${product.name}"
+              class="product-image"
+              loading="lazy"
+            />
+          </div>
+          <div class="product-content">
+            <h3 class="product-title">${product.name}</h3>
+            <p class="product-price">${utils.formatPrice(product.price)}</p>
+            <button class="btn btn-primary add-to-cart">
+              В корзину
+            </button>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+      wrapper.appendChild(slide);
+    });
 
-    sliderWrapper.appendChild(slide);
+    // Create dots
+    const dotsContainer = document.querySelector("#sliderDots");
+    if (dotsContainer) {
+      popularProducts.forEach((_, index) => {
+        const dot = document.createElement("button");
+        dot.className = "slider-dot";
+        dot.setAttribute("aria-label", `Перейти к слайду ${index + 1}`);
+        if (index === 0) dot.classList.add("active");
+        dotsContainer.appendChild(dot);
+      });
+    }
 
-    // Create dot for this slide
-    const dot = document.createElement("div");
-    dot.className = `slider-dot ${index === 0 ? "active" : ""}`;
-    dot.dataset.index = index;
-    dot.addEventListener("click", () => showSlide(index));
-    sliderDotsContainer.appendChild(dot);
-  });
+    // Initialize slider functionality
+    let currentSlide = 0;
+    const slides = wrapper.querySelectorAll(".slider-slide");
+    const dots = dotsContainer.querySelectorAll(".slider-dot");
+    const prevBtn = document.querySelector("#prevSlide");
+    const nextBtn = document.querySelector("#nextSlide");
 
-  slider.appendChild(sliderWrapper);
+    function updateSlider() {
+      wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index === currentSlide);
+        dot.setAttribute(
+          "aria-current",
+          index === currentSlide ? "true" : "false"
+        );
+      });
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+    }
 
-  // Add event listeners for prev/next buttons
-  document
-    .getElementById("prevSlide")
-    ?.addEventListener("click", () => changeSlide(-1));
-  document
-    .getElementById("nextSlide")
-    ?.addEventListener("click", () => changeSlide(1));
+    // Event listeners
+    prevBtn.addEventListener("click", () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlider();
+      }
+    });
 
-  // Auto-slideshow
-  let slideInterval = setInterval(() => changeSlide(1), 5000);
+    nextBtn.addEventListener("click", () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlider();
+      }
+    });
 
-  // Pause slideshow on hover
-  slider.addEventListener("mouseenter", () => clearInterval(slideInterval));
-  slider.addEventListener(
-    "mouseleave",
-    () => (slideInterval = setInterval(() => changeSlide(1), 5000))
-  );
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        currentSlide = index;
+        updateSlider();
+      });
+    });
 
-  // Current slide index
-  let currentSlide = 0;
+    // Touch support
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-  // Function to show a specific slide
-  function showSlide(index) {
-    const slides = document.querySelectorAll(".slider-slide");
-    const dots = document.querySelectorAll(".slider-dot");
+    wrapper.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
 
-    // Hide all slides
-    slides.forEach((slide) => (slide.style.display = "none"));
+    wrapper.addEventListener("touchmove", (e) => {
+      touchEndX = e.touches[0].clientX;
+    });
 
-    // Remove active class from all dots
-    dots.forEach((dot) => dot.classList.remove("active"));
+    wrapper.addEventListener("touchend", () => {
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentSlide < slides.length - 1) {
+          currentSlide++;
+        } else if (diff < 0 && currentSlide > 0) {
+          currentSlide--;
+        }
+        updateSlider();
+      }
+    });
 
-    // Show selected slide and activate corresponding dot
-    slides[index].style.display = "flex";
-    dots[index].classList.add("active");
+    // Auto slide
+    let autoSlideInterval = setInterval(() => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlider();
+      }
+    }, 5000);
 
-    // Update current slide index
-    currentSlide = index;
-  }
+    // Pause on hover
+    slider.addEventListener("mouseenter", () => {
+      clearInterval(autoSlideInterval);
+    });
 
-  // Function to change slide (prev/next)
-  function changeSlide(direction) {
-    const slides = document.querySelectorAll(".slider-slide");
-    let newIndex = currentSlide + direction;
+    slider.addEventListener("mouseleave", () => {
+      autoSlideInterval = setInterval(() => {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+          updateSlider();
+        }
+      }, 5000);
+    });
 
-    // Loop back to first/last slide if needed
-    if (newIndex < 0) newIndex = slides.length - 1;
-    if (newIndex >= slides.length) newIndex = 0;
+    // Add to cart buttons
+    wrapper.querySelectorAll(".add-to-cart").forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        const productId = popularProducts[index].id;
+        window.dispatchEvent(
+          new CustomEvent("addToCart", { detail: { productId } })
+        );
+      });
+    });
+  },
+};
 
-    showSlide(newIndex);
-  }
-}
+// Export individual functions for direct use
+export const { renderProducts, initSearch, initPopularItems } = productsModule;

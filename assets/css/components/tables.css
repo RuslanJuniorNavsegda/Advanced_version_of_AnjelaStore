@@ -1,0 +1,127 @@
+/* ==========================================================================
+   Table Styles
+   ========================================================================== */
+
+/* Base Table */
+.table {
+  width: 100%;
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-color);
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--spacing-md);
+  vertical-align: top;
+  border-top: 1px solid var(--gray-200);
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid var(--gray-200);
+  background-color: var(--gray-50);
+  font-weight: 600;
+  text-align: left;
+}
+
+.table tbody tr:hover {
+  background-color: var(--gray-50);
+}
+
+/* Bordered Table */
+.table-bordered {
+  border: 1px solid var(--gray-200);
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid var(--gray-200);
+}
+
+/* Striped Table */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--gray-50);
+}
+
+/* Hover Table */
+.table-hover tbody tr:hover {
+  background-color: var(--gray-100);
+}
+
+/* Small Table */
+.table-sm th,
+.table-sm td {
+  padding: var(--spacing-sm);
+}
+
+/* Responsive Table */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Table Variants */
+.table-primary {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+}
+
+.table-secondary {
+  background-color: var(--secondary-color-light);
+  color: var(--secondary-color);
+}
+
+.table-success {
+  background-color: var(--success-color-light);
+  color: var(--success-color);
+}
+
+.table-danger {
+  background-color: var(--error-color-light);
+  color: var(--error-color);
+}
+
+.table-warning {
+  background-color: var(--warning-color-light);
+  color: var(--warning-color);
+}
+
+.table-info {
+  background-color: var(--info-color-light);
+  color: var(--info-color);
+}
+
+/* Table Alignment */
+.table-align-middle th,
+.table-align-middle td {
+  vertical-align: middle;
+}
+
+.table-align-bottom th,
+.table-align-bottom td {
+  vertical-align: bottom;
+}
+
+/* Table Caption */
+.table-caption {
+  caption-side: bottom;
+  padding-top: var(--spacing-sm);
+  color: var(--gray-600);
+  text-align: left;
+}
+
+/* Responsive Tables */
+@media (max-width: 768px) {
+  .table-responsive {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .table th,
+  .table td {
+    padding: var(--spacing-sm);
+    font-size: 0.875rem;
+  }
+}

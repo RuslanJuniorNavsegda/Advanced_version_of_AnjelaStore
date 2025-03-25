@@ -1,4 +1,4 @@
-import { products, getRandomColor } from "./config.js";
+import { config, utils } from "./config.js";
 import { showMessage } from "./utils.js";
 
 // Cart state
@@ -6,6 +6,281 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // DOM elements
 const body = document.querySelector("body");
+
+// Cart module
+export const cartModule = {
+  // Initialize cart
+  init() {
+    this.loadCart();
+    this.updateCartCount();
+    this.initCartModal();
+    this.initEventListeners();
+  },
+
+  // Load cart from localStorage
+  loadCart() {
+    const savedCart = localStorage.getItem(config.cart.storageKey);
+    this.items = savedCart ? JSON.parse(savedCart) : [];
+  },
+
+  // Save cart to localStorage
+  saveCart() {
+    localStorage.setItem(config.cart.storageKey, JSON.stringify(this.items));
+  },
+
+  // Update cart count badge
+  updateCartCount() {
+    const cartCount = document.querySelector("#cart-count");
+    if (cartCount) {
+      const totalItems = this.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+      cartCount.textContent = totalItems;
+      cartCount.style.display = totalItems > 0 ? "block" : "none";
+    }
+  },
+
+  // Initialize cart modal
+  initCartModal() {
+    const modal = document.getElementById("cartModal");
+    const cartBtn = document.querySelector(".cart-link");
+    const closeBtn = modal.querySelector(".close-modal");
+
+    if (cartBtn && modal) {
+      cartBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.openCart();
+      });
+      closeBtn.addEventListener("click", () => this.closeCart());
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) this.closeCart();
+      });
+    }
+  },
+
+  // Initialize event listeners
+  initEventListeners() {
+    window.addEventListener("addToCart", (e) => {
+      this.addToCart(e.detail.productId);
+    });
+  },
+
+  // Open cart modal
+  openCart() {
+    const modal = document.getElementById("cartModal");
+    if (modal) {
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+      this.renderCartItems();
+    }
+  },
+
+  // Close cart modal
+  closeCart() {
+    const modal = document.getElementById("cartModal");
+    if (modal) {
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+  },
+
+  // Add item to cart
+  addToCart(productId) {
+    const product = config.products.find((p) => p.id === productId);
+    if (!product) return;
+
+    const existingItem = this.items.find((item) => item.id === productId);
+    if (existingItem) {
+      if (existingItem.quantity < config.cart.maxItems) {
+        existingItem.quantity++;
+        this.saveCart();
+        this.updateCartCount();
+        showMessage("Товар добавлен в корзину", "success");
+      } else {
+        showMessage("Достигнут лимит товаров в корзине", "warning");
+      }
+    } else {
+      this.items.push({
+        id: productId,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image,
+      });
+      this.saveCart();
+      this.updateCartCount();
+      showMessage("Товар добавлен в корзину", "success");
+    }
+  },
+
+  // Remove item from cart
+  removeFromCart(productId) {
+    this.items = this.items.filter((item) => item.id !== productId);
+    this.saveCart();
+    this.updateCartCount();
+    this.renderCartItems();
+    showMessage("Товар удален из корзины", "info");
+  },
+
+  // Update item quantity
+  updateQuantity(productId, quantity) {
+    const item = this.items.find((item) => item.id === productId);
+    if (item) {
+      if (quantity > 0 && quantity <= config.cart.maxItems) {
+        item.quantity = quantity;
+        this.saveCart();
+        this.updateCartCount();
+        this.renderCartItems();
+      } else if (quantity > config.cart.maxItems) {
+        showMessage("Достигнут лимит товаров в корзине", "warning");
+      }
+    }
+  },
+
+  // Render cart items
+  renderCartItems() {
+    const cartItems = document.querySelector(".cart-items");
+    const cartTotal = document.querySelector(".cart-total");
+    if (!cartItems || !cartTotal) return;
+
+    if (this.items.length === 0) {
+      cartItems.innerHTML = `
+        <div class="empty-cart">
+          <i class="fas fa-shopping-cart"></i>
+          <p>Корзина пуста</p>
+        </div>
+      `;
+      cartTotal.style.display = "none";
+      return;
+    }
+
+    cartItems.innerHTML = this.items
+      .map(
+        (item) => `
+        <div class="cart-item" data-product-id="${item.id}">
+          <div class="cart-item-image">
+            <img src="${item.image}" alt="${item.name}" />
+          </div>
+          <div class="cart-item-content">
+            <h3 class="cart-item-title">${item.name}</h3>
+            <p class="cart-item-price">${utils.formatPrice(item.price)}</p>
+            <div class="cart-item-quantity">
+              <button class="quantity-btn minus" data-action="decrease">-</button>
+              <input type="number" value="${item.quantity}" min="1" max="${
+          config.cart.maxItems
+        }" />
+              <button class="quantity-btn plus" data-action="increase">+</button>
+            </div>
+          </div>
+          <button class="remove-item">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `
+      )
+      .join("");
+
+    cartTotal.style.display = "block";
+    cartTotal.innerHTML = `
+      <div class="cart-total-content">
+        <p>Итого:</p>
+        <p class="total-price">${utils.formatPrice(this.getTotalPrice())}</p>
+      </div>
+      <button class="btn btn-primary checkout-btn">
+        Оформить заказ
+      </button>
+    `;
+
+    // Add event listeners
+    this.addCartItemEventListeners();
+  },
+
+  // Add event listeners to cart items
+  addCartItemEventListeners() {
+    const cartItems = document.querySelector(".cart-items");
+    if (!cartItems) return;
+
+    // Quantity buttons
+    cartItems.querySelectorAll(".quantity-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const item = e.target.closest(".cart-item");
+        const productId = parseInt(item.dataset.productId);
+        const input = item.querySelector("input[type='number']");
+        const currentValue = parseInt(input.value);
+        const action = e.target.dataset.action;
+
+        if (action === "increase") {
+          this.updateQuantity(productId, currentValue + 1);
+        } else if (action === "decrease") {
+          this.updateQuantity(productId, currentValue - 1);
+        }
+      });
+    });
+
+    // Quantity input
+    cartItems.querySelectorAll("input[type='number']").forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const item = e.target.closest(".cart-item");
+        const productId = parseInt(item.dataset.productId);
+        const value = parseInt(e.target.value);
+        this.updateQuantity(productId, value);
+      });
+    });
+
+    // Remove buttons
+    cartItems.querySelectorAll(".remove-item").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const item = e.target.closest(".cart-item");
+        const productId = parseInt(item.dataset.productId);
+        this.removeFromCart(productId);
+      });
+    });
+
+    // Checkout button
+    const checkoutBtn = document.querySelector(".checkout-btn");
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener("click", () => this.checkout());
+    }
+  },
+
+  // Calculate total price
+  getTotalPrice() {
+    return this.items.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  },
+
+  // Checkout
+  checkout() {
+    // Show loading state
+    const checkoutBtn = document.querySelector(".checkout-btn");
+    if (checkoutBtn) {
+      checkoutBtn.disabled = true;
+      checkoutBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Обработка...';
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      showMessage("Заказ успешно оформлен!", "success");
+      this.clearCart();
+      this.closeCart();
+    }, 1500);
+  },
+
+  // Clear cart
+  clearCart() {
+    this.items = [];
+    this.saveCart();
+    this.updateCartCount();
+    this.renderCartItems();
+  },
+};
+
+// Export individual functions for direct use
+export const { init: initCart } = cartModule;
 
 export function initCart() {
   document.querySelector(".cart-link").addEventListener("click", toggleCart);
@@ -27,50 +302,6 @@ export function toggleCart() {
   body.classList.toggle("no-scroll");
 }
 
-export function addToCart(productId) {
-  const product = products.find((p) => p.id === productId);
-
-  // Check if product already exists in cart
-  const existingItemIndex = cart.findIndex((item) => item.id === productId);
-
-  if (existingItemIndex !== -1) {
-    // If product exists, increment quantity
-    if (!cart[existingItemIndex].quantity) {
-      cart[existingItemIndex].quantity = 1; // Initialize if doesn't exist
-    }
-    cart[existingItemIndex].quantity += 1;
-  } else {
-    // Add new product with quantity 1
-    product.quantity = 1;
-    cart.push(product);
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartCount();
-  renderCart();
-
-  // Show confirmation message
-  showMessage(`${product.name} добавлен в корзину`);
-}
-
-export function removeFromCart(productId) {
-  const itemIndex = cart.findIndex((item) => item.id === productId);
-
-  if (itemIndex !== -1) {
-    if (cart[itemIndex].quantity > 1) {
-      // Reduce quantity if more than 1
-      cart[itemIndex].quantity -= 1;
-    } else {
-      // Remove completely if quantity is 1
-      cart.splice(itemIndex, 1);
-    }
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartCount();
-  renderCart();
-}
-
 function renderCart() {
   const container = document.getElementById("cartItems");
   const total = cart.reduce(
@@ -82,7 +313,7 @@ function renderCart() {
     .map(
       (item) => `
         <div class="cart-item">
-            <div class="cart-item-img" style="background-color: ${getRandomColor(
+            <div class="cart-item-img" style="background-color: ${utils.getRandomColor(
               item.id
             )};">
                 <span>${item.name.charAt(0)}</span>
@@ -275,6 +506,3 @@ function completeOrder() {
     }, 500);
   });
 }
-
-// Expose cart methods to global scope for HTML event handlers
-window.cartModule = { addToCart, removeFromCart, toggleCart };
