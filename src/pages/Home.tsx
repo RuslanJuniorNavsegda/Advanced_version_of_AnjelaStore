@@ -1,201 +1,171 @@
 import { Link } from "react-router-dom";
+import { ArrowRight, Truck, Shield, Clock, RefreshCw } from "lucide-react";
 import useStore from "../store/useStore";
-import { ShoppingBag, Truck, Shield, Heart } from "lucide-react";
-import { Product } from "../types/product";
+import ProductCard from "../components/products/ProductCard";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function Home() {
-  const { products, isLoading } = useStore((state) => ({
+  const { products, isLoading, fetchProducts } = useStore((state) => ({
     products: state.products,
     isLoading: state.isLoading,
+    fetchProducts: state.fetchProducts,
   }));
 
-  const featuredProducts = products.slice(0, 4);
-  const girlsProducts = products
-    .filter((p) => p.category === "girls")
-    .slice(0, 4);
-  const boysProducts = products
-    .filter((p) => p.category === "boys")
-    .slice(0, 4);
-  const babyProducts = products
-    .filter((p) => p.category === "baby")
-    .slice(0, 4);
+  const featuredProducts = products.filter((product) => product.featured);
+  const girlsProducts = products.filter(
+    (product) => product.category === "girls"
+  );
+  const boysProducts = products.filter(
+    (product) => product.category === "boys"
+  );
+  const babyProducts = products.filter(
+    (product) => product.category === "baby"
+  );
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="space-y-16">
       {/* Hero Section */}
-      <section className="hero">
-        <div className="container">
-          <div className="hero-content">
-            <h1 className="hero-title">Welcome to Anjela Store</h1>
-            <p className="hero-subtitle">
-              Discover our collection of stylish and comfortable children's
-              clothing
+      <section className="relative h-[600px] bg-gradient-to-r from-primary/90 to-primary/70">
+        <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] bg-cover bg-center opacity-20" />
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <div className="max-w-2xl text-white">
+            <h1 className="text-5xl font-bold mb-6">
+              Модная детская одежда для ваших малышей
+            </h1>
+            <p className="text-xl mb-8">
+              Откройте для себя коллекцию стильной и комфортной детской одежды
+              для всех возрастов
             </p>
-            <Link to="/products" className="btn-primary">
-              Shop Now
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-2 bg-white text-primary px-8 py-3 rounded-full font-medium hover:bg-white/90 transition-colors duration-300"
+            >
+              Смотреть коллекцию
+              <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
         </div>
       </section>
 
       {/* Benefits Section */}
-      <section className="section bg-gray-50">
-        <div className="container">
-          <div className="benefits-grid">
-            <div className="benefit-card">
-              <div className="benefit-icon">
-                <Truck className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Free shipping on orders over $50</p>
+      <section className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex items-center gap-4 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+            <Truck className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium text-gray-900">Бесплатная доставка</h3>
+              <p className="text-sm text-gray-500">При заказе от 5000₽</p>
             </div>
-            <div className="benefit-card">
-              <div className="benefit-icon">
-                <Shield className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Secure Payment</h3>
-              <p className="text-gray-600">Safe and secure payment options</p>
+          </div>
+          <div className="flex items-center gap-4 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+            <Shield className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium text-gray-900">Безопасная оплата</h3>
+              <p className="text-sm text-gray-500">Все способы оплаты</p>
             </div>
-            <div className="benefit-card">
-              <div className="benefit-icon">
-                <Heart className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Quality Guarantee</h3>
-              <p className="text-gray-600">
-                High-quality materials and craftsmanship
-              </p>
+          </div>
+          <div className="flex items-center gap-4 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+            <Clock className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium text-gray-900">Быстрая доставка</h3>
+              <p className="text-sm text-gray-500">1-3 рабочих дня</p>
             </div>
-            <div className="benefit-card">
-              <div className="benefit-icon">
-                <ShoppingBag className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Easy Returns</h3>
-              <p className="text-gray-600">30-day hassle-free returns</p>
+          </div>
+          <div className="flex items-center gap-4 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+            <RefreshCw className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium text-gray-900">Легкий возврат</h3>
+              <p className="text-sm text-gray-500">В течение 14 дней</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className="section">
-        <div className="container">
-          <h2 className="section-title">Featured Products</h2>
-          <div className="products-grid">
-            {featuredProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/products/${product.id}`}
-                className="product-card"
-              >
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <div className="product-info">
-                  <h3 className="product-title">{product.name}</h3>
-                  <p className="product-category">{product.category}</p>
-                  <p className="product-price">${product.price}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+      <section className="container mx-auto px-4">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Популярные товары
+          </h2>
+          <Link
+            to="/products"
+            className="text-primary hover:text-primary/80 transition-colors duration-300"
+          >
+            Смотреть все
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </section>
 
-      {/* Girls Section */}
-      <section className="section bg-gray-50">
-        <div className="container">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="section-title">Girls Collection</h2>
-            <Link to="/products?category=girls" className="btn-outline">
-              View All
-            </Link>
-          </div>
-          <div className="products-grid">
-            {girlsProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/products/${product.id}`}
-                className="product-card"
-              >
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <div className="product-info">
-                  <h3 className="product-title">{product.name}</h3>
-                  <p className="product-category">{product.category}</p>
-                  <p className="product-price">${product.price}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Collections */}
+      <section className="container mx-auto px-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Коллекции</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Link
+            to="/products?category=girls"
+            className="group relative h-[400px] rounded-xl overflow-hidden"
+          >
+            <img
+              src="/girls-collection.jpg"
+              alt="Коллекция для девочек"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <h3 className="text-2xl font-bold mb-2">Девочки</h3>
+              <p className="text-white/80">
+                Стильная одежда для маленьких принцесс
+              </p>
+            </div>
+          </Link>
 
-      {/* Boys Section */}
-      <section className="section">
-        <div className="container">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="section-title">Boys Collection</h2>
-            <Link to="/products?category=boys" className="btn-outline">
-              View All
-            </Link>
-          </div>
-          <div className="products-grid">
-            {boysProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/products/${product.id}`}
-                className="product-card"
-              >
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <div className="product-info">
-                  <h3 className="product-title">{product.name}</h3>
-                  <p className="product-category">{product.category}</p>
-                  <p className="product-price">${product.price}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+          <Link
+            to="/products?category=boys"
+            className="group relative h-[400px] rounded-xl overflow-hidden"
+          >
+            <img
+              src="/boys-collection.jpg"
+              alt="Коллекция для мальчиков"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <h3 className="text-2xl font-bold mb-2">Мальчики</h3>
+              <p className="text-white/80">
+                Удобная одежда для маленьких джентльменов
+              </p>
+            </div>
+          </Link>
 
-      {/* Baby Section */}
-      <section className="section bg-gray-50">
-        <div className="container">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="section-title">Baby Collection</h2>
-            <Link to="/products?category=baby" className="btn-outline">
-              View All
-            </Link>
-          </div>
-          <div className="products-grid">
-            {babyProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/products/${product.id}`}
-                className="product-card"
-              >
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <div className="product-info">
-                  <h3 className="product-title">{product.name}</h3>
-                  <p className="product-category">{product.category}</p>
-                  <p className="product-price">${product.price}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <Link
+            to="/products?category=baby"
+            className="group relative h-[400px] rounded-xl overflow-hidden"
+          >
+            <img
+              src="/baby-collection.jpg"
+              alt="Коллекция для малышей"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <h3 className="text-2xl font-bold mb-2">Малыши</h3>
+              <p className="text-white/80">
+                Нежная и комфортная одежда для малышей
+              </p>
+            </div>
+          </Link>
         </div>
       </section>
     </div>

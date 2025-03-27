@@ -6,9 +6,10 @@ import { Product } from "../types/product";
 const sampleProducts: Product[] = [
   {
     id: "1",
-    name: "Floral Summer Dress",
-    price: 29.99,
-    description: "Beautiful floral dress perfect for summer days",
+    name: "Летнее платье с цветочным принтом",
+    price: 2999,
+    description:
+      "Красивое платье с цветочным принтом, идеально подходящее для летних дней",
     image: "https://example.com/dress.jpg",
     category: "girls",
     ageGroup: "4-5y",
@@ -17,17 +18,20 @@ const sampleProducts: Product[] = [
     rating: 4.5,
     reviews: 12,
     sizes: ["4", "5", "6"],
-    colors: ["Pink", "Blue"],
-    material: "100% Cotton",
-    careInstructions: ["Machine wash cold", "Tumble dry low"],
+    colors: ["Розовый", "Голубой"],
+    material: "100% Хлопок",
+    careInstructions: [
+      "Стирка при 30°C",
+      "Сушить в сушилке при низкой температуре",
+    ],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
     id: "2",
-    name: "Boys Denim Jeans",
-    price: 24.99,
-    description: "Comfortable and durable denim jeans",
+    name: "Джинсы для мальчиков",
+    price: 2499,
+    description: "Удобные и прочные джинсы из качественного денима",
     image: "https://example.com/jeans.jpg",
     category: "boys",
     ageGroup: "7-8y",
@@ -36,17 +40,20 @@ const sampleProducts: Product[] = [
     rating: 4.8,
     reviews: 8,
     sizes: ["7", "8", "9"],
-    colors: ["Blue", "Black"],
-    material: "Denim",
-    careInstructions: ["Machine wash cold", "Tumble dry medium"],
+    colors: ["Синий", "Черный"],
+    material: "Деним",
+    careInstructions: [
+      "Стирка при 30°C",
+      "Сушить в сушилке при средней температуре",
+    ],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
     id: "3",
-    name: "Baby Onesie Set",
-    price: 19.99,
-    description: "Soft cotton onesie set for babies",
+    name: "Комплект боди для малышей",
+    price: 1999,
+    description: "Мягкий комплект боди из органического хлопка для малышей",
     image: "https://example.com/onesie.jpg",
     category: "baby",
     ageGroup: "0-12m",
@@ -55,9 +62,12 @@ const sampleProducts: Product[] = [
     rating: 5.0,
     reviews: 15,
     sizes: ["0-3m", "3-6m", "6-12m"],
-    colors: ["White", "Yellow", "Green"],
-    material: "Organic Cotton",
-    careInstructions: ["Machine wash warm", "Tumble dry low"],
+    colors: ["Белый", "Желтый", "Зеленый"],
+    material: "Органический хлопок",
+    careInstructions: [
+      "Стирка при 40°C",
+      "Сушить в сушилке при низкой температуре",
+    ],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -114,7 +124,10 @@ const useStore = create<StoreState>()(
             set({
               cart: cart.map((item) =>
                 item.id === product.id
-                  ? { ...item, quantity: item.quantity + quantity }
+                  ? {
+                      ...item,
+                      quantity: Math.min(10, item.quantity + quantity),
+                    }
                   : item
               ),
             });
