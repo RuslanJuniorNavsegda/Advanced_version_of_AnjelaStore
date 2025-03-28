@@ -1,77 +1,38 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { Product } from "../types/product";
 
-// Sample products data
-const sampleProducts: Product[] = [
-  {
-    id: "1",
-    name: "Летнее платье с цветочным принтом",
-    price: 2999,
-    description:
-      "Красивое платье с цветочным принтом, идеально подходящее для летних дней",
-    image: "https://example.com/dress.jpg",
-    category: "girls",
-    ageGroup: "4-5y",
-    stock: 15,
-    featured: true,
-    rating: 4.5,
-    reviews: 12,
-    sizes: ["4", "5", "6"],
-    colors: ["Розовый", "Голубой"],
-    material: "100% Хлопок",
-    careInstructions: [
-      "Стирка при 30°C",
-      "Сушить в сушилке при низкой температуре",
-    ],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    name: "Джинсы для мальчиков",
-    price: 2499,
-    description: "Удобные и прочные джинсы из качественного денима",
-    image: "https://example.com/jeans.jpg",
-    category: "boys",
-    ageGroup: "7-8y",
-    stock: 20,
-    featured: false,
-    rating: 4.8,
-    reviews: 8,
-    sizes: ["7", "8", "9"],
-    colors: ["Синий", "Черный"],
-    material: "Деним",
-    careInstructions: [
-      "Стирка при 30°C",
-      "Сушить в сушилке при средней температуре",
-    ],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    name: "Комплект боди для малышей",
-    price: 1999,
-    description: "Мягкий комплект боди из органического хлопка для малышей",
-    image: "https://example.com/onesie.jpg",
-    category: "baby",
-    ageGroup: "0-12m",
-    stock: 25,
-    featured: true,
-    rating: 5.0,
-    reviews: 15,
-    sizes: ["0-3m", "3-6m", "6-12m"],
-    colors: ["Белый", "Желтый", "Зеленый"],
-    material: "Органический хлопок",
-    careInstructions: [
-      "Стирка при 40°C",
-      "Сушить в сушилке при низкой температуре",
-    ],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+type Category = "girls" | "boys" | "baby";
+type AgeGroup =
+  | "0-12m"
+  | "1-2y"
+  | "2-3y"
+  | "3-4y"
+  | "4-5y"
+  | "5-6y"
+  | "6-7y"
+  | "7-8y"
+  | "8-9y"
+  | "9-10y"
+  | "10-12y";
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: Category;
+  stock: number;
+  rating?: number;
+  reviews?: number;
+  description: string;
+  ageGroup: AgeGroup;
+  createdAt: string;
+  updatedAt: string;
+  featured?: boolean;
+  sizes?: string[];
+  colors?: string[];
+  material?: string;
+}
 
 interface CartItem extends Product {
   quantity: number;
@@ -116,50 +77,57 @@ const useStore = create<StoreState>()(
         setSelectedAgeGroup: (ageGroup) =>
           set({ selectedAgeGroup: ageGroup }, false, "setSelectedAgeGroup"),
 
-        addToCart: (product: Product, quantity: number) => {
-          const { cart } = get();
-          const existingItem = cart.find((item) => item.id === product.id);
+        addToCart: (product, quantity) =>
+          set((state) => {
+            const existingItem = state.cart.find(
+              (item) => item.id === product.id
+            );
+            if (existingItem) {
+              const newQuantity = Math.min(
+                10,
+                existingItem.quantity + quantity
+              );
+              return {
+                cart: state.cart.map((item) =>
+                  item.id === product.id
+                    ? { ...item, quantity: newQuantity }
+                    : item
+                ),
+              };
+            }
+            return {
+              cart: [
+                ...state.cart,
+                { ...product, quantity: Math.min(10, quantity) },
+              ],
+            };
+          }),
 
-          if (existingItem) {
-            set({
-              cart: cart.map((item) =>
-                item.id === product.id
-                  ? {
-                      ...item,
-                      quantity: Math.min(10, item.quantity + quantity),
-                    }
-                  : item
-              ),
-            });
-          } else {
-            set({ cart: [...cart, { ...product, quantity }] });
-          }
-        },
+        removeFromCart: (productId) =>
+          set((state) => ({
+            cart: state.cart.filter((item) => item.id !== productId),
+          })),
 
-        removeFromCart: (productId: string) => {
-          const { cart } = get();
-          set({ cart: cart.filter((item) => item.id !== productId) });
-        },
-
-        updateQuantity: (productId: string, quantity: number) => {
-          const { cart } = get();
-          set({
-            cart: cart.map((item) =>
-              item.id === productId ? { ...item, quantity } : item
+        updateQuantity: (productId, quantity) =>
+          set((state) => ({
+            cart: state.cart.map((item) =>
+              item.id === productId
+                ? { ...item, quantity: Math.min(10, Math.max(0, quantity)) }
+                : item
             ),
-          });
-        },
+          })),
 
-        clearCart: () => {
-          set({ cart: [] });
-        },
+        clearCart: () => set({ cart: [] }),
 
         fetchProducts: async () => {
           set({ isLoading: true, error: null });
           try {
-            // For now, use sample products instead of API call
-            set({ products: sampleProducts, isLoading: false });
+            // Implement API call to fetch products
+            const response = await fetch("/api/products");
+            const products = await response.json();
+            set({ products });
           } catch (error) {
+            console.error("Error fetching products:", error);
             set({
               error:
                 error instanceof Error ? error.message : "An error occurred",
